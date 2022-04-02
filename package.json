@@ -1,0 +1,53 @@
+{
+  "name": "foodgether",
+  "version": "1.0.0",
+  "description": "foodgether",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon",
+    "lint": "eslint . --ext .ts",
+    "pretest": "./node_modules/.bin/eslint --ignore-path .gitignore . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lamnguyencse17/foodgether.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lamnguyencse17/foodgether/issues"
+  },
+  "homepage": "https://github.com/lamnguyencse17/foodgether#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "puppeteer": "^13.5.1",
+    "winston": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
+    "eslint": "^8.12.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^16.1.4",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.7",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix",
+      "git add"
+    ]
+  }
+}
