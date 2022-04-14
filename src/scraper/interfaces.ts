@@ -1,3 +1,5 @@
+import {SupportedSites} from '../configs/enums';
+
 export interface IScrapedMenuItem {
   name: string;
   price: number;
@@ -6,4 +8,5 @@ export interface IScrapedMenuItem {
 
 export interface IAgentOptions {
   isHeadless: boolean;
+  type: SupportedSites;
 }
