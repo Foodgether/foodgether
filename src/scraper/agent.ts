@@ -3,7 +3,7 @@ import { startBrowser } from './browser';
 import { identifyClosed, identifyMenu } from './identifiers';
 import logger from '../utils/logger';
 import { IAgentOptions } from './interfaces';
-import {SupportedSites} from '../configs/enums';
+import {SupportedSites} from '../constants/enums';
 import {WAIT_SELECTOR as SHOPEE_WAIT_SELECTOR} from '../configs/shoppee';
 
 class ScrapeAgent {

@@ -1,4 +1,4 @@
-import {SupportedSites} from '../configs/enums';
+import {SupportedSites} from '../constants/enums';
 
 export interface IScrapedMenuItem {
   name: string;

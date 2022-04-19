@@ -1,7 +1,7 @@
 import {Page} from 'puppeteer';
 import logger from '../utils/logger';
 import {IScrapedMenuItem} from './interfaces';
-import {SupportedSites} from '../configs/enums';
+import {SupportedSites} from '../constants/enums';
 import {identifyShopeeMenu} from './menu';
 import {identifyShopeeClosed} from './closed';
 
