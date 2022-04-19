@@ -1,3 +1,3 @@
 export enum SupportedSites {
-  SHOPEE = 'SHOPEE'
+  SHOPEE = 'SHOPEE',
 }

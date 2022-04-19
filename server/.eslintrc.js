@@ -20,7 +20,8 @@ module.exports = {
     ],
     "rules": {
         "no-console": 1,
-        "import/prefer-default-export": 1
+        "import/prefer-default-export": 1,
+        "@typescript-eslint/no-shadow": 0,
     },
     ignorePatterns: ['.eslintrc.js', 'node_modules']
 }

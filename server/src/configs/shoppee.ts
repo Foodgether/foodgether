@@ -14,4 +14,4 @@ export const ITEM_IMAGE_ATTRIBUTE = 'src';
 
 export const CLOSED_MODAL_SELECTOR = '#modal';
 export const CLOSED_MODAL_BODY_SELECTOR = 'div.modal-body';
-export const CLOSED_KEYWORDS = ['Ngoài giờ', 'đóng']
+export const CLOSED_KEYWORDS = ['Ngoài giờ', 'đóng'];

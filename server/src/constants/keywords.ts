@@ -1,1 +1,1 @@
-export default ['shopee']
+export default ['shopee'];

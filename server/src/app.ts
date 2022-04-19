@@ -1,27 +1,28 @@
 import express from 'express';
+import bodyParser from 'body-parser';
+import morgan from 'morgan';
+import cors from 'cors';
+import compression from 'compression';
+import helmet from 'helmet';
+import router from './routers';
 import logger from './utils/logger';
-import Agent from './scraper/agent';
-import {SupportedSites} from './constants/enums';
-import parseUrl from './utils/urlParser';
 
+const isProduction = process.env.NODE_ENV === 'production';
+const jsonParser = bodyParser.json();
 const app = express();
 const port = 3000;
 
-app.get('/', async (req, res) => {
-  // const url = 'https://shopeefood.vn/ho-chi-minh/quan-an-com-tam-31-dong-den';
-  // const type = SupportedSites.SHOPEE;
-  const url = 'https://shopeefood.vn/ho-chi-minh/gia-an-do-an-sang-duong-so-14';
-  try {
-    const type = parseUrl(url);
-    const agent = new Agent();
-    await agent.initAgent({ isHeadless: true, type});
-    const menu = await agent.scrape(url);
-    // logger.log('info', menu);
-    await agent.close();
-    return res.status(200).json(menu);
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-});
+if (!isProduction) {
+  app.use(morgan('tiny', {
+    stream: {
+      write: message => logger.info(message.trim()),
+    }
+  }));
+}
+app.use(cors());
+app.use(compression());
+app.use(helmet());
+app.use(jsonParser);
+app.use('/', router);
 
 app.listen(port, () => logger.log('info', `Express is listening at http://localhost:${port}`));

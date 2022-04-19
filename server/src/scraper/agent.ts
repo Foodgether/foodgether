@@ -3,14 +3,16 @@ import { startBrowser } from './browser';
 import { identifyClosed, identifyMenu } from './identifiers';
 import logger from '../utils/logger';
 import { IAgentOptions } from './interfaces';
-import {SupportedSites} from '../constants/enums';
-import {WAIT_SELECTOR as SHOPEE_WAIT_SELECTOR} from '../configs/shoppee';
+import { SupportedSites } from '../constants/enums';
+import { WAIT_SELECTOR as SHOPEE_WAIT_SELECTOR } from '../configs/shoppee';
 
 class ScrapeAgent {
   private isHeadless: boolean;
+
   public type: SupportedSites;
 
   private browser: Browser;
+
   private page: Page;
 
   async initAgent(options: IAgentOptions) {

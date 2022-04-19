@@ -1,22 +1,22 @@
+import { Page } from 'puppeteer';
 import logger from '../../utils/logger';
-import {Page} from 'puppeteer';
 import {
   ITEM_IMAGE_ATTRIBUTE, ITEM_IMAGE_SELECTOR,
   ITEM_NAME_SELECTOR,
   ITEM_OUT_OF_STOCK_SELECTOR,
   ITEM_PRICE_SELECTOR, ITEM_PRICE_SPLITTER,
-  ITEM_SELECTOR
+  ITEM_SELECTOR,
 } from '../../configs/shoppee';
 
 export default async (page: Page) => {
-  logger.log('info', 'Identifying Menu');
+  logger.log('info', 'Identifying Shopee Menu');
 
   return page.evaluate(({
-                          ITEM_SELECTOR, ITEM_OUT_OF_STOCK_SELECTOR,
-                          ITEM_NAME_SELECTOR, ITEM_PRICE_SELECTOR,
-                          ITEM_PRICE_SPLITTER, ITEM_IMAGE_SELECTOR,
-                          ITEM_IMAGE_ATTRIBUTE
-                        }) => {
+    ITEM_SELECTOR, ITEM_OUT_OF_STOCK_SELECTOR,
+    ITEM_NAME_SELECTOR, ITEM_PRICE_SELECTOR,
+    ITEM_PRICE_SPLITTER, ITEM_IMAGE_SELECTOR,
+    ITEM_IMAGE_ATTRIBUTE,
+  }) => {
     const results = [];
     const items = document.querySelectorAll(ITEM_SELECTOR);
     items.forEach((item) => {
@@ -41,6 +41,6 @@ export default async (page: Page) => {
     ITEM_PRICE_SELECTOR,
     ITEM_PRICE_SPLITTER,
     ITEM_IMAGE_SELECTOR,
-    ITEM_IMAGE_ATTRIBUTE
+    ITEM_IMAGE_ATTRIBUTE,
   });
-}
+};
