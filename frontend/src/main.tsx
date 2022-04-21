@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import Navbar from './Navbar';
 import Menu from './Menu/Menu';
+import 'sweetalert2/src/sweetalert2.scss'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
