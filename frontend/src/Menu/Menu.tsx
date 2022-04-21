@@ -17,7 +17,7 @@ const Menu = () => {
   return <div className="flex flex-col max-w-2xl m-auto">
     {menu.length > 0 &&
       menu.map(
-        ({name, price, image}) => <Card price={price} name={name} image={image}/>)
+        ({name, price, image}) => <Card key={name} price={price} name={name} image={image}/>)
     }
   </div>
 }

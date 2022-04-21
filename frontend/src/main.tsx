@@ -13,8 +13,8 @@ import Menu from './Menu/Menu';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <div>
-      <Navbar/>
         <BrowserRouter>
+          <Navbar/>
           <Routes>
             <Route path="/">
               <Route index element={<Home />} />
