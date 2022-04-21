@@ -5,6 +5,7 @@ import { GetMenuSchema } from './validators/menu';
 
 export const getMenuController = async (req: Request, res: Response) => {
   try {
+    console.log(req.body);
     const { url } = await GetMenuSchema.validate(req.body);
     const type = parseUrl(url);
     const agent = new Agent();
