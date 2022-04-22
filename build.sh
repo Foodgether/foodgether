@@ -1,0 +1,36 @@
+#!/bin/sh
+
+verifyNode () {
+  echo "Checking Node Version"
+  node --version | grep "v17" &> /dev/null
+  if [ $? == 0 ]; then
+   echo "Node Installed"
+  else
+   echo "Node not installed"
+   curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh
+   sudo bash /tmp/nodesource_setup.sh
+   sudo apt install nodejs -y
+  fi
+}
+
+buildFrontEnd () {
+  echo "Building Front End"
+  cd frontend
+  npm install
+  npm run build
+  cd ..
+}
+
+buildBackEnd() {
+  echo "Building Back End"
+  cd server
+  npm install
+  npm run build
+  cd ..
+}
+
+ls
+verifyNode
+buildFrontEnd
+buildBackEnd
+exit 0;
