@@ -1,4 +1,4 @@
 echo "Building Back End"
-cd ../server
+cd server
 npm install
 npm run build
