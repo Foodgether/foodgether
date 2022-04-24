@@ -17,5 +17,30 @@ pipeline {
         sh 'bash ./scripts/backend.sh'
       }
     }
+    stage('Stopping PM2') {
+//       when {
+//         branch 'main'
+//       }
+      steps {
+        sh 'bash ./scripts/deploy/pm2.sh'
+        sh 'bash ./scripts/deploy/stop.sh'
+      }
+    }
+    stage('Deploy frontend') {
+//       when {
+//         branch 'main'
+//       }
+      steps {
+        sh 'JENKINS_NODE_COOKIE=dontKillMe bash ./scripts/deploy/frontend.sh'
+      }
+    }
+    stage('Deploy backend') {
+//       when {
+//         branch 'main'
+//       }
+      steps {
+        sh 'JENKINS_NODE_COOKIE=dontKillMe bash ./scripts/deploy/backend.sh'
+      }
+    }
   }
 }
