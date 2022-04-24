@@ -1,23 +1,24 @@
 import {useLocation} from 'react-router'
 import Card from './Card';
-
-type MenuItem = {
-  name: string;
-  price: number;
-  image: string;
-}
-type MenuState = {
-  menu: MenuItem[];
-}
+import {MenuState} from './interface'
 
 const Menu = () => {
   const location = useLocation();
   const {menu} = location.state as MenuState;
+  console.log(menu);
 
   return <div className="flex flex-col max-w-2xl m-auto">
     {menu.length > 0 &&
       menu.map(
-        ({name, price, image}) => <Card key={name} price={price} name={name} image={image}/>)
+        (dishType) => {
+          return dishType.dishes.map(dish => {
+            console.log(dish.is_available);
+            if (!dish.is_available) {
+              return <></>
+            }
+            return <Card key={dish.name} price={dish.price} name={dish.name} photos={dish.photos}/>
+          })
+        })
     }
   </div>
 }

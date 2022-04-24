@@ -1,46 +1,27 @@
 import { Page } from 'puppeteer';
 import logger from '../../utils/logger';
-import {
-  ITEM_IMAGE_ATTRIBUTE, ITEM_IMAGE_SELECTOR,
-  ITEM_NAME_SELECTOR,
-  ITEM_OUT_OF_STOCK_SELECTOR,
-  ITEM_PRICE_SELECTOR, ITEM_PRICE_SPLITTER,
-  ITEM_SELECTOR,
-} from '../../configs/shoppee';
+import {GETTING_MENU_TIMEDOUT} from '../../constants/error';
 
-export default async (page: Page) => {
+export default async (page: Page) => new Promise((resolve, reject) => {
   logger.log('info', 'Identifying Shopee Menu');
-
-  return page.evaluate(({
-    ITEM_SELECTOR, ITEM_OUT_OF_STOCK_SELECTOR,
-    ITEM_NAME_SELECTOR, ITEM_PRICE_SELECTOR,
-    ITEM_PRICE_SPLITTER, ITEM_IMAGE_SELECTOR,
-    ITEM_IMAGE_ATTRIBUTE,
-  }) => {
-    const results = [];
-    const items = document.querySelectorAll(ITEM_SELECTOR);
-    items.forEach((item) => {
-      // Out of stock
-      if (item.querySelector(ITEM_OUT_OF_STOCK_SELECTOR)) {
-        return;
-      }
-      const name = item.querySelector(ITEM_NAME_SELECTOR).innerHTML;
-      const price = item.querySelector(ITEM_PRICE_SELECTOR).innerHTML.split(ITEM_PRICE_SPLITTER)[0];
-      const image = item.querySelector(ITEM_IMAGE_SELECTOR).getAttribute(ITEM_IMAGE_ATTRIBUTE);
-      results.push({
-        name,
-        price,
-        image,
-      });
-    });
-    return results;
-  }, {
-    ITEM_SELECTOR,
-    ITEM_OUT_OF_STOCK_SELECTOR,
-    ITEM_NAME_SELECTOR,
-    ITEM_PRICE_SELECTOR,
-    ITEM_PRICE_SPLITTER,
-    ITEM_IMAGE_SELECTOR,
-    ITEM_IMAGE_ATTRIBUTE,
-  });
-};
+  let result = null;
+  let totalTime = 0;
+  page.reload();
+  page.on('response', async (response) => {
+    if (response.url().indexOf("get_delivery_dishes") > 0 && response.request().method() != "OPTIONS"){
+      result = await response.json();
+    }
+  })
+  const menuInterval = setInterval(() => {
+    if (result != null && result.result === "success"){
+      logger.log('info', 'Shopee Menu Identified');
+      clearInterval(menuInterval);
+      resolve(result.reply.menu_infos);
+    }
+    if (totalTime === 15*1000 || (result && result.reply.result !== "success")) {
+      clearInterval(menuInterval);
+      reject(GETTING_MENU_TIMEDOUT);
+    }
+    totalTime += 100
+  }, 100);
+})
