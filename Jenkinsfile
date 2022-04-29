@@ -19,16 +19,9 @@ pipeline {
         sh 'bash ./scripts/backend.sh'
       }
     }
-    stage('Stopping containers') {
+    stage('Stopping docker containers') {
       steps {
         sh 'bash ./scripts/deploy/stop.sh'
-      }
-    }
-//       when {
-//         branch 'main'
-//       }
-      steps {
-        sh 'bash ./scripts/deploy/pm2.sh'
       }
     }
     stage('Deploy frontend') {
