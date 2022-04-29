@@ -32,7 +32,7 @@ pipeline {
 //         branch 'main'
 //       }
       steps {
-        sh 'bash ./scripts/deploy/frontend.sh'
+        sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/frontend.sh'
       }
     }
 //     stage('Deploy backend') {
