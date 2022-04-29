@@ -19,7 +19,11 @@ pipeline {
         sh 'bash ./scripts/backend.sh'
       }
     }
-    stage('Checking PM2') {
+    stage('Stopping containers') {
+      steps {
+        sh 'bash ./scripts/deploy/stop.sh'
+      }
+    }
 //       when {
 //         branch 'main'
 //       }
