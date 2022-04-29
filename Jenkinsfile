@@ -5,18 +5,20 @@ pipeline {
       steps {
         sh 'bash ./scripts/node.sh'
         sh 'bash ./scripts/chromium.sh'
+        sh 'bash ./scripts/docker.sh'
       }
     }
     stage('Building frontend') {
       steps {
         sh 'bash ./scripts/frontend.sh'
+        sh ''
       }
     }
     stage('Building backend') {
       steps {
         sh 'bash ./scripts/backend.sh'
       }
-    }   
+    }
     stage('Checking PM2') {
 //       when {
 //         branch 'main'
@@ -30,16 +32,16 @@ pipeline {
 //         branch 'main'
 //       }
       steps {
-        sh 'JENKINS_NODE_COOKIE=dontKillMe bash ./scripts/deploy/frontend.sh'
+        sh 'bash ./scripts/deploy/frontend.sh'
       }
     }
-    stage('Deploy backend') {
-//       when {
-//         branch 'main'
+//     stage('Deploy backend') {
+// //       when {
+// //         branch 'main'
+// //       }
+//       steps {
+//         sh 'JENKINS_NODE_COOKIE=dontKillMe bash ./scripts/deploy/backend.sh'
 //       }
-      steps {
-        sh 'JENKINS_NODE_COOKIE=dontKillMe bash ./scripts/deploy/backend.sh'
-      }
-    }
+//     }
   }
 }
