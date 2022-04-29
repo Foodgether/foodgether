@@ -11,7 +11,6 @@ pipeline {
     stage('Building frontend') {
       steps {
         sh 'bash ./scripts/frontend.sh'
-        sh ''
       }
     }
     stage('Building backend') {
