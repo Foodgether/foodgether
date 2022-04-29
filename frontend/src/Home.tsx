@@ -46,7 +46,7 @@ function Home() {
       return;
     }
     const menuResponse = await rawMenuResponse.json();
-    navigate('/menu', { replace: true, state: { menu: menuResponse } });
+    navigate('/foodgether/menu', { replace: true, state: { menu: menuResponse } });
   }
 
   const navigate = useNavigate();
