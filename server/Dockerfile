@@ -1,12 +1,14 @@
 FROM node:17
 
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 RUN apt-get update && apt upgrade -y
+RUN apt install chromium -y
 
 WORKDIR /usr/src/app
 COPY . .
+
 RUN rm -rf ./node-modules
 RUN npm install
-RUN npm install puppeteer
 RUN npm i -g pm2
 RUN ls
 
