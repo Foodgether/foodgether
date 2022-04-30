@@ -31,13 +31,13 @@ pipeline {
         sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/frontend.sh'
       }
     }
-//     stage('Deploy backend') {
-// //       when {
-// //         branch 'main'
-// //       }
-//       steps {
-//         sh 'JENKINS_NODE_COOKIE=dontKillMe bash ./scripts/deploy/backend.sh'
+    stage('Deploy backend') {
+//       when {
+//         branch 'main'
 //       }
-//     }
+      steps {
+        sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/backend.sh'
+      }
+    }
   }
 }
