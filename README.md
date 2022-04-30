@@ -4,7 +4,7 @@ Best lunch ordering web app for Kobiers
 
 ### Vision
 
-Simple way to order lunch together:
+A simple way to order lunch together:
 - Host just only input the link of shop and app will generate link for members
 - Members choose and submit
 - Summary the final number of orders
