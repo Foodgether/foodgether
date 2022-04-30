@@ -39,7 +39,7 @@ pipeline {
         sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/backend.sh'
       }
     }
-    stage('Building backend image') {
+    stage('Deployyyyyy') {
 //       when {
 //         branch 'main'
 //       }
