@@ -12,6 +12,12 @@ export const startBrowser = async (): Promise<Browser | null> => {
     };
     if (process.env.NODE_ENV !== 'development') {
       options["executablePath"] = '/usr/bin/chromium';
+      options.args = [
+        ...options.args,
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--no-sandbox",
+      ]
     }
     browser = await puppeteer.launch();
     return browser;

@@ -8,6 +8,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN rm -rf ./node-modules
 RUN npm install
+RUN npm install puppeteer
 RUN npm i -g pm2
 RUN ls
 
