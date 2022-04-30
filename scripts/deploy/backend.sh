@@ -1,5 +1,4 @@
-sudo rm -rf /home/ubuntu/foodgether_build/server
-sudo mkdir /home/ubuntu/foodgether_build/server
-
-sudo cp -R ./server/* /home/ubuntu/foodgether_build/server
-#BUILD_ID=dontKillMe JENKINS_NODE_COOKIE=dontKillMe pm2 start /home/ubuntu/foodgether_build/server/app.js --name=server
+cd backend
+docker rmi -f foodgether-backend
+docker build . -t foodgether-backend
+docker run -d -p 3000:3000 --name foodgether-backend foodgether-backend
