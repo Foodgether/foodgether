@@ -2,7 +2,7 @@ FROM node:17
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-RUN apt-get update && apt install -y chromium-browser
+RUN apt-get update && apt install -y chromium
 
 WORKDIR /usr/src/app
 COPY . .
