@@ -5,21 +5,17 @@ export const startBrowser = async (): Promise<Browser | null> => {
   let browser;
   try {
     logger.log('info', 'Opening the browser......');
-    const options = {
-      headless: true,
-      args: ['--disable-setuid-sandbox'],
-      ignoreHTTPSErrors: true,
-    };
     if (process.env.NODE_ENV !== 'development') {
-      options["executablePath"] = '/usr/bin/chromium';
-      options.args = [
-        ...options.args,
-        "--disable-gpu",
-        "--disable-dev-shm-usage",
-        "--no-sandbox",
-      ]
+      await puppeteer.connect({browserWSEndpoint: 'wss://chrome:5000'});
     }
-    browser = await puppeteer.launch();
+    else {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--disable-setuid-sandbox'],
+        ignoreHTTPSErrors: true,
+      });
+    }
+
     return browser;
   } catch (err) {
     logger.log('info', 'Could not create a browser instance => : ', err);

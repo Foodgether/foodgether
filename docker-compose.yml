@@ -1,0 +1,18 @@
+version: '2.1'
+
+services:
+  foodgether-frontend:
+    image: foodgether-frontend
+    ports:
+      - 8181:8181
+    restart: always
+  foodgether-backend:
+    image: foodgether-backend
+    ports:
+      - 3000:3000
+    restart: always
+  chrome:
+    image: browserless/chrome
+    ports:
+      - 5000:3000
+

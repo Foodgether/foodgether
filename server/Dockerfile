@@ -7,7 +7,7 @@ RUN apt install chromium -y
 WORKDIR /usr/src/app
 COPY . .
 
-RUN rm -rf ./node-modules
+RUN rm -rf ./node_modules
 RUN npm install
 RUN npm i -g pm2
 RUN ls

@@ -23,7 +23,7 @@ pipeline {
         sh 'bash ./scripts/deploy/stop.sh'
       }
     }
-    stage('Deploy frontend') {
+    stage('Building frontend image') {
 //       when {
 //         branch 'main'
 //       }
@@ -31,12 +31,20 @@ pipeline {
         sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/frontend.sh'
       }
     }
-    stage('Deploy backend') {
+    stage('Building backend image') {
 //       when {
 //         branch 'main'
 //       }
       steps {
         sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/backend.sh'
+      }
+    }
+    stage('Building backend image') {
+//       when {
+//         branch 'main'
+//       }
+      steps {
+        sh 'docker-compose up'
       }
     }
   }
