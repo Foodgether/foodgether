@@ -11,9 +11,9 @@ Simple way to order lunch together:
 
 ### Wiki
 
-* [Frontend](team)
-* [Server](architecture)
-* [Scripts](research)
+* [Frontend](frontend)
+* [Server](server)
+* [Scripts](scripts)
 
 ### Commands
 
