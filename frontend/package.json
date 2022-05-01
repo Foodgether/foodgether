@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "pm2": "^5.2.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router": "^6.3.0",
@@ -16,6 +17,7 @@
     "sweetalert2-react-content": "^5.0.0"
   },
   "devDependencies": {
+    "@types/node": "^17.0.30",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.20.0",

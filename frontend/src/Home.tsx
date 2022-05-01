@@ -5,6 +5,7 @@ import {useNavigate} from 'react-router';
 import Spinner from './Home/Spinner';
 import loadingMessages from './utils/loading-messages';
 import Swal from 'sweetalert2';
+import {BACKEND_URL, BASE_PATH} from './config';
 
 function Home() {
   const [url, setUrl] = useState('')
@@ -21,7 +22,7 @@ function Home() {
     const interval = setInterval(() => {
       setLoadingMessage(loadingMessages[Math.floor(Math.random() * loadingMessages.length)])
     }, 2000)
-      const rawMenuResponse = await fetch('http://localhost:3000/menu', {
+      const rawMenuResponse = await fetch(`${BACKEND_URL}/menu`, {
         method: 'POST',
         body: JSON.stringify({
           url,
@@ -46,7 +47,7 @@ function Home() {
       return;
     }
     const menuResponse = await rawMenuResponse.json();
-    navigate('/menu', { replace: true, state: { menu: menuResponse } });
+    navigate(`${BASE_PATH}/menu`, { replace: true, state: { menu: menuResponse } });
   }
 
   const navigate = useNavigate();

@@ -10,6 +10,7 @@ import {
 import Navbar from './Navbar';
 import Menu from './Menu/Menu';
 import 'sweetalert2/src/sweetalert2.scss'
+import {BASE_PATH} from './config';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -17,7 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
           <Navbar/>
           <Routes>
-            <Route path="/">
+            <Route path={BASE_PATH}>
               <Route index element={<Home />} />
               <Route path="menu" element={<Menu />} />
             </Route>
