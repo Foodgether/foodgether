@@ -1,11 +1,14 @@
 ### Introduce
 
-API server for Foodgether
+Web server for Foodgether
 
 ### Tech stack:
 
-- Framework/Library: NodeJS
+- Framework/Library: React
 - Code: TypeScript
+- Build tool: Vite
+- Alert popup: SweetAlert2
+- Styling: Tailwindcss
 
 ### Commands
 
