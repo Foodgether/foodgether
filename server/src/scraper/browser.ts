@@ -6,7 +6,7 @@ export const startBrowser = async (): Promise<Browser | null> => {
   try {
     logger.log('info', 'Opening the browser......');
     if (process.env.NODE_ENV !== 'development') {
-      await puppeteer.connect({browserWSEndpoint: 'ws://chrome:5000'});
+      browser = await puppeteer.connect({browserWSEndpoint: 'ws://chrome:5000'});
     }
     else {
       browser = await puppeteer.launch({
