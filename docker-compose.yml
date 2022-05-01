@@ -17,8 +17,15 @@ services:
     ports:
       - 3000:3000
     restart: always
+    networks:
+      - foodgether-network
   chrome:
     image: browserless/chrome
+    networks:
+      - foodgether-network
     ports:
       - 5000:3000
 
+networks:
+  foodgether-network:
+    driver: bridge
