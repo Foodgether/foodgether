@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3'
 
 services:
   foodgether-frontend:
@@ -19,6 +19,8 @@ services:
     restart: always
     networks:
       - foodgether-network
+    depends_on:
+      - chrome
   chrome:
     image: browserless/chrome
     networks:
@@ -26,6 +28,8 @@ services:
     ports:
       - 5000:3000
 
+
 networks:
   foodgether-network:
     driver: bridge
+

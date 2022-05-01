@@ -7,7 +7,7 @@ export const startBrowser = async (): Promise<Browser | null> => {
     logger.log('info', 'Opening the browser......');
     console.log(process.env.NODE_ENV === 'production')
     if (process.env.NODE_ENV === 'production') {
-      browser = await puppeteer.connect({browserWSEndpoint: 'ws://localhost:5000'});
+      browser = await puppeteer.connect({browserWSEndpoint: 'ws://host.docker.internal:5000'});
     }
     else {
       browser = await puppeteer.launch({

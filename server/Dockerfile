@@ -8,6 +8,8 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN rm -rf ./node_modules
+RUN rm -rf quick-start*
+RUN npm install puppeteer
 RUN npm install
 RUN npm i -g pm2
 
