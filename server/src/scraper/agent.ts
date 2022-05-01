@@ -19,7 +19,6 @@ class ScrapeAgent {
     this.isHeadless = options.isHeadless;
     this.type = options.type;
     this.browser = await startBrowser();
-    console.log(!this.browser.isConnected())
     if (!this.browser) {
       logger.error('Browser is not connected');
       throw new Error('Browser is not connected');
