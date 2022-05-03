@@ -12,6 +12,7 @@ RUN rm -rf quick-start*
 RUN npm install puppeteer
 RUN npm install
 RUN npm i -g pm2
+RUN npx prisma generate
 
 EXPOSE 8181
 CMD ["pm2-runtime", "./ecosystem.json"]
