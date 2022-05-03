@@ -6,19 +6,39 @@ import compression from 'compression';
 import helmet from 'helmet';
 import router from './routers';
 import logger from './utils/logger';
+import { initPrismaClient } from './prisma';
+import { initRedis } from './redis';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const jsonParser = bodyParser.json();
 const app = express();
 const port = 3000;
 
-if (!isProduction) {
-  app.use(morgan('tiny', {
-    stream: {
-      write: message => logger.info(message.trim()),
-    }
-  }));
+try {
+  (async () => {await initPrismaClient()})();
 }
+catch (err) {
+  if (isProduction) {
+    logger.log('error', 'Prisma client failed to init', err);
+    process.exit(1);
+  }
+}
+
+try {
+  (async () => {await initRedis()})();
+}
+catch (err) {
+  if (isProduction) {
+    logger.log('error', 'Redis failed to init', err);
+    process.exit(1);
+  }
+}
+
+app.use(morgan('tiny', {
+  stream: {
+    write: message => logger.info(message.trim()),
+  }
+}));
 app.use(cors());
 app.use(compression());
 app.use(helmet());
