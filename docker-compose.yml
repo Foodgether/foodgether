@@ -37,13 +37,14 @@ services:
       - "5000:3000"
 
   redis:
-    image: 'bitnami/redis:latest'
+    image: 'redis:alpine'
     environment:
       - REDIS_REPLICATION_MODE=master
       - REDIS_PASSWORD=$REDIS_PASSWORD
       - ALLOW_EMPTY_PASSWORD=yes
     networks:
       - foodgether-network
+    command: '--requirepass $REDIS_PASSWORD'
     volumes:
       - /etc/bitnami/redis:/bitnami/redis
     ports:

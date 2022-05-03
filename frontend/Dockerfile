@@ -1,4 +1,4 @@
-FROM node:17
+FROM node:17-alpine
 
 RUN apt-get update && apt upgrade -y
 

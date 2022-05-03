@@ -1,4 +1,4 @@
-FROM node:17
+FROM node:17-alpine
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 ENV NODE_ENV production
