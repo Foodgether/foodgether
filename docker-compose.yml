@@ -35,7 +35,7 @@ services:
     image: 'bitnami/mongodb:latest'
     restart: always
     environment:
-      ALLOW_EMPTY_PASSWORD: true
+      ALLOW_EMPTY_PASSWORD: "true"
       MONGODB_ROOT_PASSWORD: $FOODGETHER_MONGO_PASSWORD
       MONGODB_REPLICA_SET_MODE: primary
       MONGODB_ADVERTISED_HOSTNAME: mongo
