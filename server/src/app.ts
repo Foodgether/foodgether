@@ -6,11 +6,20 @@ import compression from 'compression';
 import helmet from 'helmet';
 import router from './routers';
 import logger from './utils/logger';
+import { initPrismaClient } from './prisma';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const jsonParser = bodyParser.json();
 const app = express();
 const port = 3000;
+try {
+  (async () => {await initPrismaClient()})();
+}
+catch (err) {
+  logger.log('error', 'Prisma client failed to init', err);
+  process.exit(1);
+}
+
 
 if (!isProduction) {
   app.use(morgan('tiny', {

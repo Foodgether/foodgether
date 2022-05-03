@@ -15,12 +15,14 @@ services:
       context: ./server
       dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - "3000:3000"
     restart: always
     networks:
       - foodgether-network
     depends_on:
       - chrome
+      - mongo
+      - redis
     extra_hosts:
       - "host.docker.internal:host-gateway"
   chrome:
@@ -28,7 +30,35 @@ services:
     networks:
       - foodgether-network
     ports:
-      - 5000:3000
+      - "5000:3000"
+  mongo:
+    image: 'bitnami/mongodb:latest'
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: true
+      MONGODB_ROOT_PASSWORD: $FOODGETHER_MONGO_PASSWORD
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_ADVERTISED_HOSTNAME: mongo
+      MONGODB_REPLICA_SET_KEY: foodgether
+    ports:
+      - "27017:27017"
+    networks:
+      - foodgether-network
+    volumes:
+      - /etc/bitnami/mongodb:/bitnami/mongodb
+
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - foodgether-network
+    volumes:
+      - /etc/bitnami/redis:/bitnami/redis
+    ports:
+      - "6379:6379"
 
 
 networks:
