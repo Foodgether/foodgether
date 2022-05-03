@@ -40,11 +40,11 @@ services:
     image: 'redis:alpine'
     environment:
       - REDIS_REPLICATION_MODE=master
-      - REDIS_PASSWORD=$REDIS_PASSWORD
+      - FOODGETHER_REDIS_PASSWORD=$FOODGETHER_REDIS_PASSWORD
       - ALLOW_EMPTY_PASSWORD=yes
     networks:
       - foodgether-network
-    command: '--requirepass $REDIS_PASSWORD'
+    command: '--requirepass $FOODGETHER_REDIS_PASSWORD'
     volumes:
       - /etc/bitnami/redis:/bitnami/redis
     ports:
