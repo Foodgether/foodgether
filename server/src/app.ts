@@ -15,9 +15,8 @@ const app = express();
 const port = 3000;
 
 try {
-  (async () => {await initPrismaClient()})();
-}
-catch (err) {
+  (async () => { await initPrismaClient(); })();
+} catch (err) {
   if (isProduction) {
     logger.log('error', 'Prisma client failed to init', err);
     process.exit(1);
@@ -25,9 +24,8 @@ catch (err) {
 }
 
 try {
-  (async () => {await initRedis()})();
-}
-catch (err) {
+  (async () => { await initRedis(); })();
+} catch (err) {
   if (isProduction) {
     logger.log('error', 'Redis failed to init', err);
     process.exit(1);
@@ -36,8 +34,8 @@ catch (err) {
 
 app.use(morgan('tiny', {
   stream: {
-    write: message => logger.info(message.trim()),
-  }
+    write: (message) => logger.info(message.trim()),
+  },
 }));
 app.use(cors());
 app.use(compression());

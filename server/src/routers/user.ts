@@ -1,8 +1,8 @@
 import express from 'express';
-import { getMenuController } from '../controllers/menu';
+import { createUserController } from '../controllers/user';
 
 const router = express.Router();
 
-router.post('/', getMenuController);
+router.post('/', createUserController);
 
 export default router;
