@@ -4,12 +4,17 @@ import morgan from 'morgan';
 import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import dotEnv from 'dotenv';
 import router from './routers';
 import logger from './utils/logger';
 import { initPrismaClient } from './prisma';
 import { initRedis } from './redis';
 
 const isProduction = process.env.NODE_ENV === 'production';
+if (!isProduction) {
+  dotEnv.config();
+}
 const jsonParser = bodyParser.json();
 const app = express();
 const port = 3000;
@@ -40,6 +45,7 @@ app.use(morgan('tiny', {
 app.use(cors());
 app.use(compression());
 app.use(helmet());
+app.use(cookieParser());
 app.use(jsonParser);
 app.use('/', router);
 

@@ -1,8 +1,10 @@
 import express from 'express';
-import { createUserController } from '../controllers/user';
+import { createUserController, getCurrentUserController } from '../controllers/user';
+import authenticate from '../middlewares/authenticate';
 
 const router = express.Router();
 
 router.post('/', createUserController);
+router.get('/me', authenticate, getCurrentUserController);
 
 export default router;

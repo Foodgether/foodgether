@@ -9,3 +9,10 @@ export const createUser = async (newUser: ICreateUserBody) => {
     data: { ...newUser, pin: hashedPin },
   });
 };
+
+export const getCurrentUser = async (phoneNumber: string) => {
+  const prisma = getPrismaClient();
+  return prisma.user.findUnique({
+    where: { phoneNumber },
+  });
+};

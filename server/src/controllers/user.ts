@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import { CreateUserSchema } from './validators/user';
-import { createUser } from '../services/user';
+import { createUser, getCurrentUser } from '../services/user';
 import logger from '../utils/logger';
 import { ICreateUserBody } from './interface/user';
+import { generateToken } from '../services/auth';
+import { IAuthenticatedRequest } from '../middlewares/interface/authenticate';
 
 export const createUserController = async (req: Request, res: Response) => {
   let createUserRequest: ICreateUserBody;
@@ -14,9 +16,20 @@ export const createUserController = async (req: Request, res: Response) => {
   }
   try {
     const { pin, ...user } = await createUser(createUserRequest);
-    return res.status(200).json({ ...user });
+    const token = generateToken(user.phoneNumber);
+    return res.status(200).cookie('token', token, { maxAge: 24 * 60 * 60 * 1000 }).json({ user, token });
   } catch (err) {
     logger.log('error', `Failed at creating user: ${err}`);
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+export const getCurrentUserController = async (req: IAuthenticatedRequest, res: Response) => {
+  try {
+    const user = await getCurrentUser(req.phoneNumber);
+    return res.status(200).json({ user });
+  } catch (err) {
+    logger.log('error', `Failed at getting current user: ${err}`);
     return res.status(500).json({ message: err.message });
   }
 };

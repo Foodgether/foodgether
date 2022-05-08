@@ -13,6 +13,7 @@ RUN npm install puppeteer
 RUN npm install
 RUN npm i -g pm2
 RUN npx prisma generate
+RUN npx prisma db push
 
 EXPOSE 8181
 CMD ["pm2-runtime", "./ecosystem.json"]

@@ -20,5 +20,6 @@ else
     -e MONGODB_ADVERTISED_HOSTNAME=mongo \
     -e MONGODB_ROOT_PASSWORD=$FOODGETHER_MONGO_PASSWORD \
     -e MONGODB_REPLICA_SET_KEY=replicasetkey123 \
+    -p 27017:27017 \
     bitnami/mongodb:latest
 fi
