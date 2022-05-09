@@ -42,7 +42,12 @@ app.use(morgan('tiny', {
     write: (message) => logger.info(message.trim()),
   },
 }));
-app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:8080',
+  credentials: true
+}));
+
 app.use(compression());
 app.use(helmet());
 app.use(cookieParser());

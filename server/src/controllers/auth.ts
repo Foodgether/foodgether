@@ -7,7 +7,7 @@ import { LoginSchema } from "./validators/auth";
 
 export const loginControler = async (req: IAuthenticatedRequest, res: Response) => {
   try {
-    if (req.phoneNumber) {
+    if (req.cookies.token) {
       return res.status(400).json({message: "You are already logged in"});
     }
     const loginInfo = await LoginSchema.validate(req.body);

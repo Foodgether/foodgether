@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent } from 'react'
 import './Home.css'
 import './index.css'
 import {useNavigate} from 'react-router';

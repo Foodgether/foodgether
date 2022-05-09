@@ -1,8 +1,21 @@
 import React, { FC } from 'react';
 import { Link } from "react-router-dom";
 import Logo from './logo.png'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import AuthForm from './Navbar/AuthForm';
+const AuthFormSwal = withReactContent(Swal)
 
 const Navbar:FC = () => {
+  const showAuthForm = () => {
+    AuthFormSwal.fire({
+      html: <AuthForm/>,
+      didOpen: () => {
+        Swal?.getPopup()?.querySelector('input')?.focus()
+      },
+      showConfirmButton: false
+    })
+  }
   return <nav className="border-gray-200 px-2 sm:px-4 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400">
     <div className="container flex flex-wrap justify-between items-center mx-auto">
       <Link to="/" className="flex items-center object-contain h-full">
@@ -27,7 +40,8 @@ const Navbar:FC = () => {
         <ul className="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
           <li>
             <button
-               className="rounded-lg border border-2 border-pink-900 hover:border-white text-2xl font-medium block py-2 pr-4 pl-3 text-pink-900 hover:text-white border-gray-700">Register/Login</button>
+              onClick={showAuthForm}
+              className="rounded-lg border border-2 border-pink-900 hover:border-white text-2xl font-medium block py-2 pr-4 pl-3 text-pink-900 hover:text-white border-gray-700">Register/Login</button>
           </li>
         </ul>
       </div>
