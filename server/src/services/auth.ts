@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || '12345';
 
 export const hashPin = async (pin: string) => bcrypt.hash(pin, 10);
 
-export const compareHash = async (pin: string, hash: string) => bcrypt.compare(pin, hash);
+export const compareHash = async (pin: string, hash: string): Promise<boolean> => bcrypt.compare(pin, hash);
 
 export const generateToken = (phoneNumber: string): string => jwt.sign({ data: { phoneNumber } }, JWT_SECRET, { expiresIn: '24h' });
 
