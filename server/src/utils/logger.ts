@@ -13,6 +13,7 @@ const logger = createLogger({
   transports: [
     new transports.File({ filename: 'quick-start-error.log', level: 'error' }),
     new transports.File({ filename: 'quick-start-combined.log' }),
+    // new transports.Console({ level: 'info', stderrLevels: ['error', 'info'], consoleWarnLevels: ['warn', 'debug']})
   ],
 });
 
@@ -20,13 +21,13 @@ const logger = createLogger({
 // If we're not in production then **ALSO** log to the `console`
 // with the colorized simple format.
 //
-if (process.env.NODE_ENV !== 'production') {
+// if (process.env.NODE_ENV !== 'production') {
   logger.add(new transports.Console({
     format: format.combine(
       format.colorize(),
       format.simple(),
     ),
   }));
-}
+// }
 
 export default logger;

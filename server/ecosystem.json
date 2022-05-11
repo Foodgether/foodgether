@@ -1,0 +1,4 @@
+{
+  "script": "./dist/app.js",
+  "name": "foodgether-backend"
+}
