@@ -2,11 +2,16 @@ import React from 'react'
 import { Formik, Form, Field, FormikProps } from 'formik'
 import Swal from 'sweetalert2'
 import { BACKEND_URL } from '../config'
+import { useAtom } from 'jotai'
+import { tokenAtom, userAtom } from '..'
 
 export type AuthFormLoginValues = { phoneNumber: string, pin: string}
 let formikRef: FormikProps<AuthFormLoginValues> | null
 
 const AuthLoginForm = () => {
+  const [_, setUser] = useAtom(userAtom);
+  const [__, setToken] = useAtom(tokenAtom);
+  
   const handleClickSubmit = async () => {
     await formikRef?.submitForm()
   }
@@ -37,7 +42,8 @@ const AuthLoginForm = () => {
         return;
       }
       const loginResponse = await rawLoginResponse.json();
-      console.log(loginResponse)
+      setUser(loginResponse.user)
+      setToken(loginResponse.token)
       Swal.close();
     }}
     >
