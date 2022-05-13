@@ -11,7 +11,7 @@ let formikRef: FormikProps<AuthFormLoginValues> | null
 const AuthLoginForm = () => {
   const [_, setUser] = useAtom(userAtom);
   const [__, setToken] = useAtom(tokenAtom);
-  
+
   const handleClickSubmit = async () => {
     await formikRef?.submitForm()
   }

@@ -16,7 +16,6 @@ export const loginControler = async (req: IAuthenticatedRequest, res: Response) 
       return res.status(401).json({message: "Wrong phone number or password"});
     }
     const verifyPinResult = await compareHash(loginInfo.pin, user.pin);
-    console.log(verifyPinResult);
     if (!verifyPinResult) {
       return res.status(401).json({message: "Wrong phone number or password"});
     }

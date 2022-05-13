@@ -5,7 +5,5 @@ import 'sweetalert2/src/sweetalert2.scss'
 import Index from './index';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Index/>
-  </React.StrictMode>
+  <Index/>
 )

@@ -5,11 +5,17 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import AuthForm from './Navbar/AuthForm';
 import { useAtom } from 'jotai';
-import { userAtom } from '.';
+import { tokenAtom, userAtom } from '.';
+import { BACKEND_URL, BASE_PATH } from './config';
+import { useLocation, useNavigate } from 'react-router';
 const AuthFormSwal = withReactContent(Swal)
 
 const Navbar:FC = () => {
-  const [user, _] = useAtom(userAtom)
+  const [_, setToken] = useAtom(tokenAtom);
+  const [user, setUser] = useAtom(userAtom)
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const showAuthForm = () => {
     AuthFormSwal.fire({
       html: <AuthForm/>,
@@ -18,6 +24,42 @@ const Navbar:FC = () => {
       },
       showConfirmButton: false
     })
+  }
+
+  const handleLogout = async () => {
+    const rawLogoutResponse = await fetch(`${BACKEND_URL}/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    })
+    if (!rawLogoutResponse.ok) {
+      const {message} = await rawLogoutResponse.json()
+      await Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: message,
+        showConfirmButton: false,
+        timer: 1500
+      })
+      return;
+    }
+    else {
+      await Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Logout successfully',
+        showConfirmButton: false,
+        timer: 1500
+      })
+      setToken('');
+      setUser(null);
+    }
+    if (location.pathname !== '/') {
+      navigate(BASE_PATH);
+    }
   }
   return <nav className="border-gray-200 px-2 sm:px-4 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400">
     <div className="container flex flex-wrap justify-between items-center mx-auto">
@@ -48,6 +90,7 @@ const Navbar:FC = () => {
           </li>}
           {user && <li>
             <button
+              onClick={handleLogout}
               className="rounded-lg border border-2 border-pink-900 hover:border-white text-2xl font-medium block py-2 pr-4 pl-3 text-pink-900 hover:text-white border-gray-700">Logout</button>
           </li>}
         </ul>
