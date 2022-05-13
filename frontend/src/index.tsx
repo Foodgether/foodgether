@@ -30,7 +30,7 @@ const Index = () => {
     .then(result => result.json())
     .then(result => {
         if (!result.ok) {
-          if (window.location.pathname !== '/') {
+          if (window.location.pathname !== (BASE_PATH ? `${BASE_PATH}/` : '/')) {
             window.location.replace(BASE_PATH ? BASE_PATH : '/');
           }
         }
@@ -48,7 +48,7 @@ const Index = () => {
             </Route>
           </Routes>
       </BrowserRouter>
-    
+
   </React.StrictMode>
 }
 
