@@ -1,3 +1,4 @@
+import React from 'react'
 
 interface CardMenuProps {
   name: string;
@@ -17,7 +18,7 @@ type Photo = {
 
 const Card = (props: CardMenuProps) => {
   const {name, price, photos} = props
-  return <div
+  return <div key={name}
     className="flex flex-row max-w-2xl bg-white border border-gray-200 shadow-md dark:bg-slate-50 dark:border-gray-700 p-5">
     <img className="rounded-t-lg object-contain" src={photos[0].value} alt=""/>
     <div className="p-5 grow">

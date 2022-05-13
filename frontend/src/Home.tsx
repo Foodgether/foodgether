@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent } from 'react'
 import './Home.css'
 import './index.css'
 import {useNavigate} from 'react-router';
@@ -31,7 +31,8 @@ function Home() {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       })
     clearInterval(interval);
     setSpinner(false);
@@ -47,7 +48,7 @@ function Home() {
       return;
     }
     const menuResponse = await rawMenuResponse.json();
-    navigate(`${BASE_PATH}/menu`, { replace: true, state: { menu: menuResponse } });
+    navigate(`${BASE_PATH}/menu`, { state: { menu: menuResponse } });
   }
 
   const navigate = useNavigate();
