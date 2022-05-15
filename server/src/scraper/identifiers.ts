@@ -3,9 +3,10 @@ import logger from '../utils/logger';
 import { SupportedSites } from '../constants/enums';
 import { identifyShopeeMenu } from './menu';
 import { identifyShopeeClosed } from './closed';
+import { ShopeeScrapeResult } from './menu/shopeeMenuIdentifier';
 
 export const identifyMenu = async (page: Page, type: SupportedSites)
-: Promise<any> => {
+: Promise<ShopeeScrapeResult> => {
   logger.log('info', 'Identifying Menu');
   switch (type) {
     case SupportedSites.SHOPEE:

@@ -18,3 +18,63 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }
+
+model Restaurant {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  restaurantId Int @unique
+  deliveryId Int @unique
+  menu Menu?
+  name String
+  url String
+  address String
+  position Location
+  photos Photo[]
+  priceRange PriceRange
+  isQualityMerchant Boolean
+}
+
+model Menu {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String @db.ObjectId
+  dishTypes DishType[]
+}
+
+type Location {
+  latitude Float
+  longitude Float
+}
+
+type PriceRange {
+  minPrice Int
+  maxPrice Int
+}
+
+type Photo {
+  width Int
+  height Int
+  value String
+}
+
+type DishType {
+  id Int
+  name String
+  dishes Dish[]
+}
+
+type Dish {
+  id Int
+  name String
+  description String
+  price Price
+  discountPrice Price?
+  isAvailable Boolean
+  isActive Boolean
+  photos Photo[]
+}
+
+type Price {
+  text String
+  unit String
+  value Int
+}
