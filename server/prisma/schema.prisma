@@ -121,6 +121,7 @@ type Price {
 }
 
 type OrderDetail {
+  dishId Int
+  dishTypeId Int
   quantity Int
-  dish Dish
 }

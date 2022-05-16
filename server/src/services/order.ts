@@ -1,4 +1,4 @@
-import { Order, OrderMenu, OrderRestaurant } from "@prisma/client";
+import { Order, OrderDetail, OrderMenu, OrderRestaurant } from "@prisma/client";
 import { getPrismaClient } from "../prisma";
 import { getRedisClient } from "../redis";
 
@@ -43,8 +43,27 @@ export const cacheOrder = async (inviteId: string, order: Order) => {
   return redisClient.set(inviteId, JSON.stringify(order), 'EX', 60 * 60 * 24);
 }
 
-export const getCachedOrder = async (inviteId: string) => {
+export const getCachedOrder = async (inviteId: string): Promise<Order> => {
   const redisClient = getRedisClient()
   const order = await redisClient.get(inviteId)
   return JSON.parse(order);
+}
+
+export const createUserOrder = async (orderId: string, userId: string, detail: OrderDetail[]) => {
+  const prisma = getPrismaClient();
+  return prisma.userOrder.create({
+    data: {
+      user: {
+        connect: {
+          id: userId
+        }
+      },
+      order: {
+        connect: {
+          id: orderId
+        }
+      },
+      detail
+    }
+  })
 }
