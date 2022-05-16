@@ -9,7 +9,7 @@ export const upsertRestaurant = async (restaurant: Restaurant) => {
     name: restaurant.name,
     url: restaurant.url,
     address: restaurant.address,
-    position: restaurant.position,
+    position: {latitude: restaurant.position.latitude, longitude: restaurant.position.longitude},
     priceRange: {
       minPrice: restaurant.price_range.min_price,
       maxPrice: restaurant.price_range.max_price
@@ -40,3 +40,15 @@ export const setMenuIdToRestaurant = (restaurantId: number, menuId: string) => {
     }
   })
 };
+
+export const getRestaurantInfo = (restaurantId: number) => {
+  const prisma = getPrismaClient();
+  return prisma.restaurant.findUnique({
+    where: {
+      restaurantId
+    },
+    include: {
+      menu: true
+    }
+  })
+}

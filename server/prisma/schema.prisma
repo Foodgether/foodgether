@@ -15,6 +15,8 @@ model User {
   name        String
   phoneNumber       String @unique
   pin    String
+  orders UserOrder[]
+  createdOrders Order[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }
@@ -36,6 +38,45 @@ model Restaurant {
 model Menu {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String @db.ObjectId
+  dishTypes DishType[]
+}
+
+model Order {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  inviteId String @unique
+  restaurantId Int
+  restaurant OrderRestaurant
+  menu OrderMenu
+  orders UserOrder[]
+  createdBy User @relation(fields: [createdUserId], references: [id])
+  createdUserId String @db.ObjectId
+}
+
+model UserOrder {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  user User @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+  order Order @relation(fields: [orderId], references: [id])
+  orderId String @db.ObjectId
+  detail OrderDetail[]
+}
+
+type OrderRestaurant {
+  id String
+  restaurantId Int
+  deliveryId Int
+  name String
+  url String
+  address String
+  position Location
+  photos Photo[]
+  priceRange PriceRange
+  isQualityMerchant Boolean
+}
+
+type OrderMenu {
+  id String
   restaurantId String @db.ObjectId
   dishTypes DishType[]
 }
@@ -77,4 +118,9 @@ type Price {
   text String
   unit String
   value Int
+}
+
+type OrderDetail {
+  quantity Int
+  dish Dish
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { CreateUserSchema } from './validators/user';
-import { createUser, getCurrentUser } from '../services/user';
+import { createUser, getUser } from '../services/user';
 import logger from '../utils/logger';
 import { ICreateUserBody } from './interface/user';
 import { generateToken } from '../services/auth';
@@ -26,7 +26,7 @@ export const createUserController = async (req: Request, res: Response) => {
 
 export const getCurrentUserController = async (req: IAuthenticatedRequest, res: Response) => {
   try {
-    const user = await getCurrentUser(req.phoneNumber);
+    const user = await getUser(req.phoneNumber);
     return res.status(200).json({ user, token: req.cookies.token });
   } catch (err) {
     logger.log('error', `Failed at getting current user: ${err}`);
