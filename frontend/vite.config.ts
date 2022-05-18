@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const basePath = isProduction ? process.env.VITE_BASE_PATH : '/';
@@ -10,5 +10,5 @@ export default defineConfig({
   server: {
     port: 8080,
   },
-  base: basePath
-})
+  base: basePath,
+});

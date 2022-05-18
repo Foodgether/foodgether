@@ -17,4 +17,5 @@ export const initRedis = async () => {
   }
   logger.log('info', 'Successfully connected to Redis');
 };
+
 export const getRedisClient = (): Redis => redisClient;
