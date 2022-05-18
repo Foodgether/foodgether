@@ -1,55 +1,79 @@
-import React, { useEffect } from 'react'
-import {BACKEND_URL, BASE_PATH} from './config';
-import Navbar from './Navbar';
+import React, { useEffect } from 'react';
+import { BACKEND_URL, BASE_PATH } from './config';
+import Navbar from './Navbar/Navbar';
 import Menu from './Menu/Menu';
-import {
-  BrowserRouter,
-  Routes,
-  Route
-} from "react-router-dom";
-import Home from './Home'
-import { atom, useAtom } from 'jotai'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './Home/Home';
+import { useAtom } from 'jotai';
+import { createTheme, NextUIProvider } from '@nextui-org/react';
+import './index.css';
+import { tokenAtom, userAtom } from './atoms';
+import Profile from './Profile/Profile';
 
-export const userAtom = atom(null)
-export const tokenAtom = atom('')
-
+const theme = createTheme({
+  type: 'light',
+  theme: {
+    colors: {
+      primary: 'rgb(131 24 6)',
+      gradient:
+        'linear-gradient(175deg, rgba(236,72,153,1) 0%, rgba(251,146,60,1) 100%);',
+    },
+  },
+});
 
 const Index = () => {
-  const [_, setToken] = useAtom(tokenAtom)
-  const [__, setUser] = useAtom(userAtom)
+  const [__, setToken] = useAtom(tokenAtom);
+  const [user, setUser] = useAtom(userAtom);
 
   useEffect(() => {
+    // setUser({ ...user, fetching: true, loggedIn: false });
     fetch(`${BACKEND_URL}/user/me`, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     })
-    .then(result => result.json())
-    .then(result => {
+      .then((result) => {
+        console.log(result);
         if (!result.ok) {
-          if (window.location.pathname !== (BASE_PATH ? `${BASE_PATH}/` : '/')) {
+          if (
+            window.location.pathname !== (BASE_PATH ? `${BASE_PATH}/` : '/')
+          ) {
             window.location.replace(BASE_PATH ? BASE_PATH : '/');
           }
+          setUser({ fetching: false, loggedIn: false });
+          return;
+        } else {
+          return result.json();
         }
+      })
+      .then((result) => {
         setToken(result.token);
-        setUser(result.user);
-    })
-  }, [])
-  return <React.StrictMode>
-      <BrowserRouter>
-          <Navbar/>
+        setUser({ ...result.user, fetching: false, loggedIn: true });
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+  return (
+    <React.StrictMode>
+      <NextUIProvider theme={theme}>
+        <BrowserRouter>
+          <Navbar />
           <Routes>
             <Route path={BASE_PATH}>
               <Route index element={<Home />} />
               <Route path="menu" element={<Menu />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+      </NextUIProvider>
+    </React.StrictMode>
+  );
+};
 
-  </React.StrictMode>
-}
-
-export default Index
+export default Index;
