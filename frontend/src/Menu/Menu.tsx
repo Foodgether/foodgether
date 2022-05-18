@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router';
 import Card from './Card';
-import { Dish, DishType, MenuState } from './interface';
+import { Dish, DishType, GetMenuResult } from './interface';
 import {
   Button,
   Container,
@@ -24,13 +24,13 @@ type dishItem = DishItem | DishType;
 const Menu = () => {
   const location = useLocation();
   const [cart, _] = useAtom(cartAtom);
-  const { menu } = location.state as MenuState;
-  const dishes = menu.reduce((acc: dishItem[], dishType) => {
+  const { menu: {dishTypes} } = location.state as GetMenuResult;
+  const dishes = dishTypes.reduce((acc: dishItem[], dishType) => {
     return [
       ...acc,
       dishType,
       ...dishType.dishes.map((dish) => {
-        return { ...dish, dishTypeId: dishType.dish_type_id, orderId: '12' };
+        return { ...dish, dishTypeId: dishType.id, orderId: '12' };
       }),
     ];
   }, []);
@@ -42,7 +42,7 @@ const Menu = () => {
       alignItems="center"
       css={{ p: 50, height: '800px' }}
     >
-      {menu.length > 0 && (
+      {dishTypes.length > 0 && (
         <>
           <Virtuoso
             useWindowScroll
@@ -50,15 +50,16 @@ const Menu = () => {
             data={dishes}
             overscan={400}
             itemContent={(index, dish) => {
-              if ('dish_type_id' in dish) {
+              const isDish = "price" in dish
+              if (!isDish) {
                 return (
                   <>
                     {index !== 0 && <Spacer y={5} />}
-                    <Text h2>{dish.dish_type_name}</Text>
+                    <Text h2>{dish.name}</Text>
                   </>
                 );
               }
-              if (!dish.is_available) {
+              if (!dish.isAvailable) {
                 <></>;
               }
               return (
@@ -66,7 +67,7 @@ const Menu = () => {
                   <Card
                     key={dish.id}
                     price={
-                      dish.discount_price ? dish.discount_price : dish.price
+                      dish.discountPrice ? dish.discountPrice : dish.price
                     }
                     name={dish.name}
                     photos={dish.photos}
@@ -92,7 +93,8 @@ const Menu = () => {
           <Popover.Content>
             <div style={{ width: '20em' }}>
               {dishes.reduce((acc: any[], dish: dishItem) => {
-                if ('dish_type_id' in dish) {
+                const isDish = 'price' in dish
+                if (!isDish) {
                   return acc;
                 }
                 const order = cart[dish.orderId];
@@ -110,7 +112,7 @@ const Menu = () => {
                   <CartItem
                     key={dish.id}
                     price={
-                      dish.discount_price ? dish.discount_price : dish.price
+                      dish.discountPrice ? dish.discountPrice : dish.price
                     }
                     name={dish.name}
                     photos={dish.photos}

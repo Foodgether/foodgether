@@ -16,6 +16,7 @@ export const upsertMenu = (menu: Menu[], restaurantId: string, menuId?: string) 
           discountPrice: dish.discount_price,
           isAvailable: dish.is_available,
           isActive: dish.is_active,
+          photos: dish.photos
         }
       })
     }

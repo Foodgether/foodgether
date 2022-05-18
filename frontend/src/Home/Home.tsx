@@ -13,6 +13,7 @@ import {
   Spacer,
   Text,
 } from '@nextui-org/react';
+import { GetMenuResult } from '../Menu/interface';
 
 function Home() {
   const [url, setUrl] = useState('');
@@ -54,8 +55,8 @@ function Home() {
       });
       return;
     }
-    const menuResponse = await rawMenuResponse.json();
-    navigate(`${BASE_PATH}/menu`, { state: { menu: menuResponse } });
+    const menuResponse = await rawMenuResponse.json() as GetMenuResult;
+    navigate(`${BASE_PATH}/menu`, { state: {...menuResponse} });
   };
 
   const navigate = useNavigate();

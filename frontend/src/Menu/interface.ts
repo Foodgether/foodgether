@@ -1,29 +1,35 @@
-export type MenuState = {
-  menu: DishType[];
+export type GetMenuResult = {
+  menu: {
+    dishTypes: DishType[];
+    id: string;
+    restaurantId: number;
+  }
+  restaurant: Restaurant
 };
 
 export type DishType = {
   dishes: Dish[];
-  dish_type_id: number;
-  dish_type_name: string;
+  id: number;
+  name: string;
 };
 
 export type Dish = {
+  id: number;
   name: string;
+  description?: string;
   price: {
     text: string;
     unit: string;
     value: number;
   };
-  photos: Photo[];
-  is_available: boolean;
-  id: number;
-  description?: string;
-  discount_price?: {
+  discountPrice?: {
     text: string;
     unit: string;
     value: number;
   };
+  isAvailable: boolean;
+  isActive: boolean;
+  photos: Photo[];
 };
 
 export type Photo = {
@@ -31,3 +37,5 @@ export type Photo = {
   height: number;
   value: string;
 };
+
+export type Restaurant = {}
