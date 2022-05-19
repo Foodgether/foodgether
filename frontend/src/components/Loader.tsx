@@ -1,6 +1,6 @@
-import { Container } from '@nextui-org/react';
-import React from 'react';
-import Spinner from './Spinner';
+import { Container } from "@nextui-org/react";
+import React from "react";
+import Spinner from "./Spinner";
 
 interface LoaderProps {
   isShowingLoader: boolean;
@@ -10,7 +10,7 @@ interface LoaderProps {
 
 const Loader = ({
   isShowingLoader,
-  loadingMessage = '',
+  loadingMessage = "",
   spinner,
 }: LoaderProps) => {
   if (!isShowingLoader) {

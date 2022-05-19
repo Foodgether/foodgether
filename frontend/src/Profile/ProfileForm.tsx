@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import { useAtom } from 'jotai';
-import { userAtom } from '../atoms';
-import { Field, Form, Formik, FormikProps } from 'formik';
-import { AuthFormRegisterValues } from '../Navbar/AuthRegisterForm';
-import { BACKEND_URL } from '../config';
-import Swal from 'sweetalert2';
-import { Button, Container, Spacer } from '@nextui-org/react';
+import React, { useState } from "react";
+import { useAtom } from "jotai";
+import { userAtom } from "../atoms";
+import { Field, Form, Formik, FormikProps } from "formik";
+import { AuthFormRegisterValues } from "../Navbar/AuthRegisterForm";
+import { BACKEND_URL } from "../config";
+import Swal from "sweetalert2";
+import { Button, Container, Spacer } from "@nextui-org/react";
 
 let formikRef: FormikProps<AuthFormRegisterValues> | null;
 
 const ProfileForm = () => {
   const [user, setUser] = useAtom(userAtom);
   const [isShowingSpinner, setShowingSpinner] = useState(false);
-  const isAuthenticated = 'id' in user;
+  const isAuthenticated = "id" in user;
   if (!isAuthenticated) {
     return <></>;
   }
   return (
-    <Container css={{ px: '$24' }}>
+    <Container css={{ px: "$24" }}>
       <Formik<AuthFormRegisterValues>
         innerRef={(ref) => {
           formikRef = ref;
@@ -25,25 +25,25 @@ const ProfileForm = () => {
         initialValues={{
           phoneNumber: user.phoneNumber,
           name: user.name,
-          pin: '',
+          pin: "",
         }}
         onSubmit={async () => {
           const rawRegisterResponse = await fetch(`${BACKEND_URL}/user`, {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify({
               ...formikRef?.values,
             }),
             headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
+              Accept: "application/json",
+              "Content-Type": "application/json",
             },
-            credentials: 'include',
+            credentials: "include",
           });
           if (!rawRegisterResponse.ok) {
             const { message } = await rawRegisterResponse.json();
             await Swal.fire({
-              position: 'center',
-              icon: 'error',
+              position: "center",
+              icon: "error",
               title: message,
               showConfirmButton: false,
               timer: 1500,
@@ -104,7 +104,7 @@ const ProfileForm = () => {
             color="gradient"
             auto
             ghost
-            css={{ width: '10em', margin: 'auto' }}
+            css={{ width: "10em", margin: "auto" }}
             disabled={isShowingSpinner}
           >
             Update

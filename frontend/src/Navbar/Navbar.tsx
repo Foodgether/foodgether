@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
-import Logo from '../logo.png';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import AuthForm from './AuthForm';
-import { useAtom } from 'jotai';
-import { BACKEND_URL, BASE_PATH } from '../config';
-import { useLocation, useNavigate } from 'react-router';
-import { Button, Grid, Loading, Spacer, Text } from '@nextui-org/react';
-import { tokenAtom, userAtom } from '../atoms';
+import React, { FC } from "react";
+import { Link } from "react-router-dom";
+import Logo from "../logo.png";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import AuthForm from "./AuthForm";
+import { useAtom } from "jotai";
+import { BACKEND_URL, BASE_PATH } from "../config";
+import { useLocation, useNavigate } from "react-router";
+import { Button, Grid, Loading, Spacer, Text } from "@nextui-org/react";
+import { tokenAtom, userAtom } from "../atoms";
 const AuthFormSwal = withReactContent(Swal);
 
 const Navbar: FC = () => {
@@ -21,7 +21,7 @@ const Navbar: FC = () => {
     AuthFormSwal.fire({
       html: <AuthForm />,
       didOpen: () => {
-        Swal?.getPopup()?.querySelector('input')?.focus();
+        Swal?.getPopup()?.querySelector("input")?.focus();
       },
       showConfirmButton: false,
     });
@@ -29,18 +29,18 @@ const Navbar: FC = () => {
 
   const handleLogout = async () => {
     const rawLogoutResponse = await fetch(`${BACKEND_URL}/auth/logout`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
     });
     if (!rawLogoutResponse.ok) {
       const { message } = await rawLogoutResponse.json();
       await Swal.fire({
-        position: 'center',
-        icon: 'error',
+        position: "center",
+        icon: "error",
         title: message,
         showConfirmButton: false,
         timer: 1500,
@@ -48,16 +48,16 @@ const Navbar: FC = () => {
       return;
     } else {
       await Swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: 'Logout successfully',
+        position: "center",
+        icon: "success",
+        title: "Logout successfully",
         showConfirmButton: false,
         timer: 1500,
       });
-      setToken('');
+      setToken("");
       setUser({ fetching: false, loggedIn: false });
     }
-    if (location.pathname !== '/') {
+    if (location.pathname !== "/") {
       navigate(BASE_PATH);
     }
   };
@@ -66,8 +66,8 @@ const Navbar: FC = () => {
       xl
       gap={0}
       css={{
-        background: '$gradient',
-        position: 'fixed',
+        background: "$gradient",
+        position: "fixed",
         top: 0,
         left: 0,
         zIndex: 10000,
@@ -88,11 +88,11 @@ const Navbar: FC = () => {
             {user.fetching ? (
               <Loading color="currentColor" size="sm" />
             ) : (
-              'Register/Login'
+              "Register/Login"
             )}
           </Button>
         )}
-        {user.loggedIn && 'id' in user && (
+        {user.loggedIn && "id" in user && (
           <>
             <Link to={`${BASE_PATH}/profile`}>
               <Text>{user.name}</Text>

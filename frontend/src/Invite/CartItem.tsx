@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 import {
   Button,
   Card as NextCard,
   Grid,
   Spacer,
   Text,
-} from '@nextui-org/react';
-import { useAtom } from 'jotai';
-import { cartAtom } from '../atoms';
+} from "@nextui-org/react";
+import { useAtom } from "jotai";
+import { cartAtom } from "../atoms";
 
 interface CardMenuProps {
   id: number;
@@ -34,9 +34,9 @@ const CartItem = (props: CardMenuProps) => {
   let quantity = 0;
   const order = cart[props.orderId];
   if (order) {
-    const dishIndex = order.findIndex((item) => item.dishId === props.id);
-    if (dishIndex !== -1) {
-      quantity = order[dishIndex].quantity;
+    const dish = order.find((item) => item.dishId === props.id);
+    if (dish) {
+      quantity = dish.quantity;
     }
   }
 
@@ -80,45 +80,48 @@ const CartItem = (props: CardMenuProps) => {
     <NextCard hoverable animated>
       <NextCard.Body css={{ p: 0 }}>
         <Grid.Container justify="center">
-          <Grid xs={12} md={7}>
+          <Grid xs={12} md={6}>
             <NextCard.Image
               objectFit="scale-down"
               src={photo.value}
               alt={name}
             />
           </Grid>
-          <Grid xs={12} md={5} direction={'column'}>
+          <Grid xs={12} md={6} direction={"column"}>
             <Text h5>{name}</Text>
-            <Text h6 css={{ color: '$red500', fontWeight: '$semibold' }}>
+            <Text h6 css={{ color: "$red500", fontWeight: "$semibold" }}>
               {price.text}
             </Text>
             <Spacer y={0.5} />
             {quantity !== 0 && (
-              <Button.Group>
-                <Button
-                  onPress={handleDecrement}
-                  color="gradient"
-                  auto
-                  ghost
-                  css={{ width: '1em', height: '2em' }}
-                  size="sm"
-                >
-                  -
-                </Button>
-                <Text h6 css={{ color: '$red500', fontWeight: '$semibold' }}>
-                  {quantity}
-                </Text>
-                <Button
-                  onPress={handleIncrement}
-                  color="gradient"
-                  auto
-                  ghost
-                  css={{ width: '1em', height: '2em' }}
-                  size="sm"
-                >
-                  +
-                </Button>
-              </Button.Group>
+              <>
+                <Button.Group>
+                  <Button
+                    onPress={handleDecrement}
+                    color="gradient"
+                    auto
+                    ghost
+                    css={{ width: "1em", height: "2em" }}
+                    size="sm"
+                  >
+                    -
+                  </Button>
+                  <Text h6 css={{ color: "$red500", fontWeight: "$semibold" }}>
+                    {quantity}
+                  </Text>
+                  <Button
+                    onPress={handleIncrement}
+                    color="gradient"
+                    auto
+                    ghost
+                    css={{ width: "1em", height: "2em" }}
+                    size="sm"
+                  >
+                    +
+                  </Button>
+                </Button.Group>
+                <Text margin="auto">Total: {quantity * price.value}</Text>
+              </>
             )}
           </Grid>
         </Grid.Container>

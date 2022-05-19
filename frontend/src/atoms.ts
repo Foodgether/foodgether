@@ -27,11 +27,11 @@ interface UserAtomAuthenticated extends UserAtom {
   updatedAt: Date;
 }
 
-interface CartAtom {
+export interface CartAtom {
   [key: string]: DishInOrder[];
 }
 
-interface DishInOrder {
+export interface DishInOrder {
   dishId: number;
   dishTypeId: number;
   quantity: number;
