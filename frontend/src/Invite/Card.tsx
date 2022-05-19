@@ -51,6 +51,7 @@ const Card = (props: CardMenuProps) => {
   };
   const handleOrder = (quantity: number) => {
     let newCart;
+
     if (!cart[props.orderId]) {
       const newOrderId = [
         { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
@@ -71,6 +72,17 @@ const Card = (props: CardMenuProps) => {
           ...cart[props.orderId],
           { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
         ];
+        newCart = { ...cart, [props.orderId]: newOrder };
+      }
+    }
+    if (quantity === 0) {
+      const newOrder = cart[props.orderId].filter(
+        (dish) => dish.quantity !== 0
+      );
+      if (newOrder.length === 0) {
+        newCart = { ...cart };
+        delete newCart[props.orderId];
+      } else {
         newCart = { ...cart, [props.orderId]: newOrder };
       }
     }
@@ -99,6 +111,44 @@ const Card = (props: CardMenuProps) => {
               <Text css={{ color: '$accents7', fontWeight: '$semibold' }}>
                 {props.description}
               </Text>
+            )}
+            <Spacer y={0.5} />
+            {quantity !== 0 && (
+              <Button.Group>
+                <Button
+                  onPress={handleDecrement}
+                  color="gradient"
+                  auto
+                  ghost
+                  css={{ width: '3em', height: '3em' }}
+                >
+                  -
+                </Button>
+                <Text h3 css={{ color: '$red500', fontWeight: '$semibold' }}>
+                  {quantity}
+                </Text>
+                <Button
+                  onPress={handleIncrement}
+                  color="gradient"
+                  auto
+                  ghost
+                  css={{ width: '3em', height: '3em' }}
+                >
+                  +
+                </Button>
+              </Button.Group>
+            )}
+
+            {quantity === 0 && (
+              <Button
+                onPress={handleIncrement}
+                color="gradient"
+                auto
+                ghost
+                css={{ width: '10em' }}
+              >
+                <Text h5>Order</Text>
+              </Button>
             )}
           </Grid>
         </Grid.Container>

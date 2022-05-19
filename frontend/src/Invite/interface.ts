@@ -1,11 +1,10 @@
-export type GetMenuResult = {
-  menu: {
-    dishTypes: DishType[];
-    id: string;
-    restaurantId: number;
-  };
-  restaurant: Restaurant;
-};
+import { GetMenuResult } from '../Menu/interface';
+
+export interface GetInviteResult extends GetMenuResult {
+  id: string;
+  createdUserId: string;
+  inviteId: string;
+}
 
 export type DishType = {
   dishes: Dish[];

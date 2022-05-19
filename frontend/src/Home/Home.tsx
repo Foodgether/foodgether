@@ -14,11 +14,14 @@ import {
   Text,
 } from '@nextui-org/react';
 import { GetMenuResult } from '../Menu/interface';
+import { useAtom } from 'jotai';
+import { currentStateAtom } from '../atoms';
 
 function Home() {
   const [url, setUrl] = useState('');
   const [isShowingSpinner, setSpinner] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [currentState, setCurrentState] = useAtom(currentStateAtom);
 
   const setTargetUrl = (e: React.ChangeEvent<FormElement>) => {
     setUrl(e.target.value);
@@ -55,8 +58,13 @@ function Home() {
       });
       return;
     }
-    const menuResponse = await rawMenuResponse.json() as GetMenuResult;
-    navigate(`${BASE_PATH}/menu`, { state: {...menuResponse} });
+    const menuResponse = (await rawMenuResponse.json()) as GetMenuResult;
+    setCurrentState({
+      ...currentState,
+      currentMenu: menuResponse.menu.id,
+      currentRestaurant: menuResponse.restaurant.restaurantId,
+    });
+    navigate(`${BASE_PATH}/menu`, { state: { ...menuResponse } });
   };
 
   const navigate = useNavigate();
