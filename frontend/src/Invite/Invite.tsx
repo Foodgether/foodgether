@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router";
-import Card from "./Card";
-import { Dish, DishType, GetInviteResult } from "./interface";
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router';
+import Card from './Card';
+import { Dish, DishType, GetInviteResult } from './interface';
 import {
   Button,
   Container,
@@ -11,18 +11,18 @@ import {
   Popover,
   Spacer,
   Text,
-} from "@nextui-org/react";
-import { Virtuoso } from "react-virtuoso";
-import { useAtom } from "jotai";
-import { cartAtom } from "../atoms";
-import { BACKEND_URL, BASE_PATH } from "../config";
-import Swal from "sweetalert2";
-import Loader from "../components/Loader";
-import RestaurantInfo from "../components/RestaurantInfo";
-import SearchIcon from "../components/SearchIcon";
-import CartIcon from "../components/CartIcon";
-import CartContent from "./CartContent";
-import DishFilter from "../components/DishFilter";
+} from '@nextui-org/react';
+import { Virtuoso } from 'react-virtuoso';
+import { useAtom } from 'jotai';
+import { cartAtom } from '../atoms';
+import { BACKEND_URL, BASE_PATH } from '../config';
+import Swal from 'sweetalert2';
+import Loader from '../components/Loader';
+import RestaurantInfo from '../components/RestaurantInfo';
+import SearchIcon from '../components/SearchIcon';
+import CartIcon from '../components/CartIcon';
+import CartContent from './CartContent';
+import DishFilter from '../components/DishFilter';
 
 interface DishItem extends Dish {
   dishTypeId: number;
@@ -35,31 +35,31 @@ const Invite = () => {
   const location = useLocation();
   const { inviteId } = useParams();
   if (!inviteId) {
-    window.location.replace(BASE_PATH ? BASE_PATH : "/");
+    window.location.replace(BASE_PATH ? BASE_PATH : '/');
     return <></>;
   }
 
   const [cart, _] = useAtom(cartAtom);
-  const [filterText, setFilterText] = useState("");
+  const [filterText, setFilterText] = useState('');
   const [inviteInfo, setInviteInfo] = useState<GetInviteResult>();
 
   useEffect(() => {
     const pushedInviteInfo = location.state as GetInviteResult;
     if (!pushedInviteInfo) {
       fetch(`${BACKEND_URL}/order/invite/${inviteId}`, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
       })
         .then(async (rawResponse) => {
           if (!rawResponse.ok) {
             const { message } = await rawResponse.json();
             await Swal.fire({
-              position: "center",
-              icon: "error",
+              position: 'center',
+              icon: 'error',
               title: message,
               showConfirmButton: false,
               timer: 1500,
@@ -110,7 +110,7 @@ const Invite = () => {
       fluid
       justify="center"
       alignItems="center"
-      css={{ p: 50, height: "800px", mt: "$16" }}
+      css={{ p: 50, height: '800px', mt: '$16' }}
     >
       <RestaurantInfo />
       <Grid.Container>
@@ -124,11 +124,11 @@ const Invite = () => {
         <>
           <Virtuoso
             useWindowScroll
-            style={{ height: "100%" }}
+            style={{ height: '100%' }}
             data={dishes}
             overscan={400}
             itemContent={(index, dish) => {
-              const isDish = "price" in dish;
+              const isDish = 'price' in dish;
               if (!isDish) {
                 return (
                   <>
@@ -155,7 +155,7 @@ const Invite = () => {
         </>
       )}
       {currentCart && currentCart.length !== 0 && (
-        <div style={{ position: "fixed", right: "3em", bottom: "3em" }}>
+        <div style={{ position: 'fixed', right: '3em', bottom: '3em' }}>
           <Popover placement="top">
             <Popover.Trigger>
               <Button auto flat>

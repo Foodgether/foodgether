@@ -1,5 +1,5 @@
-import React from "react";
-import { Card as NextCard, Grid, Spacer, Text } from "@nextui-org/react";
+import React from 'react';
+import { Card as NextCard, Grid, Spacer, Text } from '@nextui-org/react';
 
 interface CardMenuProps {
   id: number;
@@ -36,14 +36,14 @@ const Card = (props: CardMenuProps) => {
             />
           </Grid>
           <Grid xs={1} md={0.5} />
-          <Grid xs={12} md direction={"column"}>
+          <Grid xs={12} md direction={'column'}>
             <Text h2>{name}</Text>
-            <Text h3 css={{ color: "$red500", fontWeight: "$semibold" }}>
+            <Text h3 css={{ color: '$red500', fontWeight: '$semibold' }}>
               {price.text}
             </Text>
             {props.description && <Spacer y={0.5} />}
             {props.description && (
-              <Text css={{ color: "$accents7", fontWeight: "$semibold" }}>
+              <Text css={{ color: '$accents7', fontWeight: '$semibold' }}>
                 {props.description}
               </Text>
             )}

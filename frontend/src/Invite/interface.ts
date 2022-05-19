@@ -47,10 +47,10 @@ export type Restaurant = {
   position: {
     latitude: number;
     longitude: number;
-  },
+  };
   priceRange: {
     minPrice: number;
     maxPrice: number;
-  },
-  isQualityMerchant: boolean
-}
+  };
+  isQualityMerchant: boolean;
+};
