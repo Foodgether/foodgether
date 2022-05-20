@@ -1,3 +1,6 @@
+import { Restaurant } from "../interfaces/restaurant";
+import { Photo } from "../interfaces/shared";
+
 export type GetMenuResult = {
   menu: {
     dishTypes: DishType[];
@@ -30,28 +33,4 @@ export type Dish = {
   isAvailable: boolean;
   isActive: boolean;
   photos: Photo[];
-};
-
-export type Photo = {
-  width: number;
-  height: number;
-  value: string;
-};
-
-export type Restaurant = {
-  id: string;
-  restaurantId: number;
-  deliveryId: number;
-  name: string;
-  url: string;
-  address: string;
-  position: {
-    latitude: number;
-    longitude: number;
-  };
-  priceRange: {
-    minPrice: number;
-    maxPrice: number;
-  };
-  isQualityMerchant: boolean;
 };

@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import Card from './Card';
-import { Dish, DishType, GetMenuResult } from './interface';
+import React, { useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
+import Card from "./Card";
+import { Dish, DishType, GetMenuResult } from "./interface";
 import {
   Button,
   Container,
@@ -10,15 +10,15 @@ import {
   Input,
   Spacer,
   Text,
-} from '@nextui-org/react';
-import { Virtuoso } from 'react-virtuoso';
-import { useAtom } from 'jotai';
-import { cartAtom, currentStateAtom } from '../atoms';
-import { BACKEND_URL, BASE_PATH } from '../config';
-import Swal from 'sweetalert2';
-import { GetInviteResult } from '../Invite/interface';
-import RestaurantInfo from '../components/RestaurantInfo';
-import DishFilter from '../components/DishFilter';
+} from "@nextui-org/react";
+import { Virtuoso } from "react-virtuoso";
+import { useAtom } from "jotai";
+import { cartAtom, currentStateAtom } from "../atoms";
+import { BACKEND_URL, BASE_PATH } from "../config";
+import Swal from "sweetalert2";
+import { GetInviteResult } from "../Invite/interface";
+import RestaurantInfo from "../components/RestaurantInfo";
+import DishFilter from "../components/DishFilter";
 
 type dishItem = Dish | DishType;
 
@@ -26,15 +26,16 @@ const Menu = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentState, _] = useAtom(currentStateAtom);
-  const [filterText, setFilterText] = useState('');
+  const [filterText, setFilterText] = useState("");
   const handleChangeFilterText = (e: React.ChangeEvent<FormElement>) => {
     setFilterText(e.target.value);
   };
   const {
     menu: { dishTypes },
+    restaurant,
   } = location.state as GetMenuResult;
   const dishes = dishTypes.reduce((acc: dishItem[], dishType) => {
-    if (filterText === '') {
+    if (filterText === "") {
       return acc.concat(dishType).concat(dishType.dishes);
     }
     const processedDishes = dishType.dishes.reduce(
@@ -56,31 +57,31 @@ const Menu = () => {
   7;
 
   const copyToClipboard = (content: string) => {
-    const el = document.createElement('textarea');
+    const el = document.createElement("textarea");
     el.value = content;
     document.body.appendChild(el);
     el.select();
-    document.execCommand('copy');
+    document.execCommand("copy");
     document.body.removeChild(el);
   };
 
   const handleCreateInvitation = async () => {
     const createRawResponse = await fetch(`${BACKEND_URL}/order/invite`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
         restaurantId: currentState.currentRestaurant,
       }),
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
     });
     if (!createRawResponse.ok) {
       const { message } = await createRawResponse.json();
       await Swal.fire({
-        position: 'center',
-        icon: 'error',
+        position: "center",
+        icon: "error",
         title: message,
         showConfirmButton: false,
         timer: 1500,
@@ -93,9 +94,9 @@ const Menu = () => {
       `${window.location.origin}${BASE_PATH}/invite/${createInvitationResponse.inviteId}`
     );
     await Swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: 'Invitation link copied to clipboard',
+      position: "center",
+      icon: "success",
+      title: "Invitation link copied to clipboard",
       showConfirmButton: false,
       timer: 1500,
     });
@@ -109,9 +110,10 @@ const Menu = () => {
       fluid
       justify="center"
       alignItems="center"
-      css={{ p: 50, height: '800px', mt: '$16' }}
+      css={{ p: 50, height: "900px", mt: "$16" }}
     >
-      <RestaurantInfo />
+      <RestaurantInfo {...restaurant} />
+      <Spacer y={2} />
       <Grid.Container>
         <Grid xs justify="flex-start">
           <DishFilter onChange={handleChangeFilterText} />
@@ -125,11 +127,11 @@ const Menu = () => {
       {dishTypes.length > 0 && (
         <Virtuoso
           useWindowScroll
-          style={{ height: '100%' }}
+          style={{ height: "100%" }}
           data={dishes}
           overscan={400}
           itemContent={(index, dish) => {
-            const isDish = 'price' in dish;
+            const isDish = "price" in dish;
             if (!isDish) {
               return (
                 <>
