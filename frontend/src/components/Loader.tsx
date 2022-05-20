@@ -4,11 +4,15 @@ import Spinner from './Spinner';
 
 interface LoaderProps {
   isShowingLoader: boolean;
-  loadingMessage: string;
+  loadingMessage?: string;
   spinner?: boolean;
 }
 
-const Loader = ({ isShowingLoader, loadingMessage, spinner }: LoaderProps) => {
+const Loader = ({
+  isShowingLoader,
+  loadingMessage = '',
+  spinner,
+}: LoaderProps) => {
   if (!isShowingLoader) {
     return <></>;
   }

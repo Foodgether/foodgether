@@ -29,7 +29,7 @@ type Photo = {
   value: string;
 };
 
-const CartItem = (props: CardMenuProps) => {
+const Card = (props: CardMenuProps) => {
   const [cart, setCart] = useAtom(cartAtom);
   let quantity = 0;
   const order = cart[props.orderId];
@@ -41,7 +41,8 @@ const CartItem = (props: CardMenuProps) => {
   }
 
   const { name, price, photos } = props;
-  const photo = photos[0];
+  const photoLastIndex = photos.length - 2;
+  const photo = photos[photoLastIndex];
   const handleIncrement = () => {
     handleOrder(quantity + 1);
   };
@@ -50,6 +51,7 @@ const CartItem = (props: CardMenuProps) => {
   };
   const handleOrder = (quantity: number) => {
     let newCart;
+
     if (!cart[props.orderId]) {
       const newOrderId = [
         { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
@@ -73,6 +75,17 @@ const CartItem = (props: CardMenuProps) => {
         newCart = { ...cart, [props.orderId]: newOrder };
       }
     }
+    if (quantity === 0) {
+      const newOrder = cart[props.orderId].filter(
+        (dish) => dish.quantity !== 0
+      );
+      if (newOrder.length === 0) {
+        newCart = { ...cart };
+        delete newCart[props.orderId];
+      } else {
+        newCart = { ...cart, [props.orderId]: newOrder };
+      }
+    }
     setCart(newCart);
   };
 
@@ -80,18 +93,25 @@ const CartItem = (props: CardMenuProps) => {
     <NextCard hoverable animated>
       <NextCard.Body css={{ p: 0 }}>
         <Grid.Container justify="center">
-          <Grid xs={12} md={7}>
+          <Grid xs={12} md={2}>
             <NextCard.Image
               objectFit="scale-down"
               src={photo.value}
               alt={name}
             />
           </Grid>
-          <Grid xs={12} md={5} direction={'column'}>
-            <Text h5>{name}</Text>
-            <Text h6 css={{ color: '$red500', fontWeight: '$semibold' }}>
+          <Grid xs={1} md={0.5} />
+          <Grid xs={12} md direction={'column'}>
+            <Text h2>{name}</Text>
+            <Text h3 css={{ color: '$red500', fontWeight: '$semibold' }}>
               {price.text}
             </Text>
+            {props.description && <Spacer y={0.5} />}
+            {props.description && (
+              <Text css={{ color: '$accents7', fontWeight: '$semibold' }}>
+                {props.description}
+              </Text>
+            )}
             <Spacer y={0.5} />
             {quantity !== 0 && (
               <Button.Group>
@@ -100,12 +120,11 @@ const CartItem = (props: CardMenuProps) => {
                   color="gradient"
                   auto
                   ghost
-                  css={{ width: '1em', height: '2em' }}
-                  size="sm"
+                  css={{ width: '3em', height: '3em' }}
                 >
                   -
                 </Button>
-                <Text h6 css={{ color: '$red500', fontWeight: '$semibold' }}>
+                <Text h3 css={{ color: '$red500', fontWeight: '$semibold' }}>
                   {quantity}
                 </Text>
                 <Button
@@ -113,12 +132,23 @@ const CartItem = (props: CardMenuProps) => {
                   color="gradient"
                   auto
                   ghost
-                  css={{ width: '1em', height: '2em' }}
-                  size="sm"
+                  css={{ width: '3em', height: '3em' }}
                 >
                   +
                 </Button>
               </Button.Group>
+            )}
+
+            {quantity === 0 && (
+              <Button
+                onPress={handleIncrement}
+                color="gradient"
+                auto
+                ghost
+                css={{ width: '10em' }}
+              >
+                <Text h5>Order</Text>
+              </Button>
             )}
           </Grid>
         </Grid.Container>
@@ -127,4 +157,4 @@ const CartItem = (props: CardMenuProps) => {
   );
 };
 
-export default CartItem;
+export default Card;

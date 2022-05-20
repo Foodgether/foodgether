@@ -10,7 +10,7 @@ export const createUser = async (newUser: ICreateUserBody) => {
   });
 };
 
-export const getCurrentUser = async (phoneNumber: string) => {
+export const getUser = async (phoneNumber: string) => {
   const prisma = getPrismaClient();
   return prisma.user.findUnique({
     where: { phoneNumber },

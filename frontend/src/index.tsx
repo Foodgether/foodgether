@@ -7,8 +7,9 @@ import Home from './Home/Home';
 import { useAtom } from 'jotai';
 import { createTheme, NextUIProvider } from '@nextui-org/react';
 import './index.css';
-import { tokenAtom, userAtom } from './atoms';
+import { currentStateAtom, tokenAtom, userAtom } from './atoms';
 import Profile from './Profile/Profile';
+import Invite from './Invite/Invite';
 
 const theme = createTheme({
   type: 'light',
@@ -26,7 +27,6 @@ const Index = () => {
   const [user, setUser] = useAtom(userAtom);
 
   useEffect(() => {
-    // setUser({ ...user, fetching: true, loggedIn: false });
     fetch(`${BACKEND_URL}/user/me`, {
       method: 'GET',
       headers: {
@@ -36,7 +36,6 @@ const Index = () => {
       credentials: 'include',
     })
       .then((result) => {
-        console.log(result);
         if (!result.ok) {
           if (
             window.location.pathname !== (BASE_PATH ? `${BASE_PATH}/` : '/')
@@ -55,9 +54,6 @@ const Index = () => {
       });
   }, []);
 
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
   return (
     <React.StrictMode>
       <NextUIProvider theme={theme}>
@@ -68,6 +64,7 @@ const Index = () => {
               <Route index element={<Home />} />
               <Route path="menu" element={<Menu />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="invite/:inviteId" element={<Invite />} />
             </Route>
           </Routes>
         </BrowserRouter>

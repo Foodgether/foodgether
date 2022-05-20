@@ -107,7 +107,7 @@ const ProfileForm = () => {
             css={{ width: '10em', margin: 'auto' }}
             disabled={isShowingSpinner}
           >
-            Get Menu
+            Update
           </Button>
         </Form>
       </Formik>

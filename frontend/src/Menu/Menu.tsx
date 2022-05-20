@@ -1,133 +1,159 @@
-import React from 'react';
-import { useLocation } from 'react-router';
+import React, { useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import Card from './Card';
-import { Dish, DishType, MenuState } from './interface';
+import { Dish, DishType, GetMenuResult } from './interface';
 import {
   Button,
   Container,
+  FormElement,
+  Grid,
   Input,
-  Popover,
   Spacer,
   Text,
 } from '@nextui-org/react';
 import { Virtuoso } from 'react-virtuoso';
 import { useAtom } from 'jotai';
-import { cartAtom } from '../atoms';
-import CartItem from './CartItem';
+import { cartAtom, currentStateAtom } from '../atoms';
+import { BACKEND_URL, BASE_PATH } from '../config';
+import Swal from 'sweetalert2';
+import { GetInviteResult } from '../Invite/interface';
+import RestaurantInfo from '../components/RestaurantInfo';
+import DishFilter from '../components/DishFilter';
 
-interface DishItem extends Dish {
-  dishTypeId: number;
-  orderId: string;
-}
-type dishItem = DishItem | DishType;
+type dishItem = Dish | DishType;
 
 const Menu = () => {
   const location = useLocation();
-  const [cart, _] = useAtom(cartAtom);
-  const { menu } = location.state as MenuState;
-  const dishes = menu.reduce((acc: dishItem[], dishType) => {
-    return [
-      ...acc,
-      dishType,
-      ...dishType.dishes.map((dish) => {
-        return { ...dish, dishTypeId: dishType.dish_type_id, orderId: '12' };
-      }),
-    ];
+  const navigate = useNavigate();
+  const [currentState, _] = useAtom(currentStateAtom);
+  const [filterText, setFilterText] = useState('');
+  const handleChangeFilterText = (e: React.ChangeEvent<FormElement>) => {
+    setFilterText(e.target.value);
+  };
+  const {
+    menu: { dishTypes },
+  } = location.state as GetMenuResult;
+  const dishes = dishTypes.reduce((acc: dishItem[], dishType) => {
+    if (filterText === '') {
+      return acc.concat(dishType).concat(dishType.dishes);
+    }
+    const processedDishes = dishType.dishes.reduce(
+      (acc: dishItem[], dish: Dish) => {
+        const loweredName = dish.name.toLowerCase();
+        if (loweredName.includes(filterText.toLowerCase())) {
+          return acc.concat(dish);
+        }
+        return acc;
+      },
+      []
+    );
+    if (processedDishes.length == 0) {
+      return acc;
+    }
+    return acc.concat(dishType).concat(processedDishes);
   }, []);
+
+  7;
+
+  const copyToClipboard = (content: string) => {
+    const el = document.createElement('textarea');
+    el.value = content;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  };
+
+  const handleCreateInvitation = async () => {
+    const createRawResponse = await fetch(`${BACKEND_URL}/order/invite`, {
+      method: 'POST',
+      body: JSON.stringify({
+        restaurantId: currentState.currentRestaurant,
+      }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
+    if (!createRawResponse.ok) {
+      const { message } = await createRawResponse.json();
+      await Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: message,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+    const createInvitationResponse =
+      (await createRawResponse.json()) as GetInviteResult;
+    copyToClipboard(
+      `${window.location.origin}/invite/${createInvitationResponse.inviteId}`
+    );
+    await Swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: 'Invitation link copied to clipboard',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    navigate(`${BASE_PATH}/invite/${createInvitationResponse.inviteId}`, {
+      state: { ...createInvitationResponse },
+    });
+  };
 
   return (
     <Container
       fluid
       justify="center"
       alignItems="center"
-      css={{ p: 50, height: '800px' }}
+      css={{ p: 50, height: '800px', mt: '$16' }}
     >
-      {menu.length > 0 && (
-        <>
-          <Virtuoso
-            useWindowScroll
-            style={{ height: '100%' }}
-            data={dishes}
-            overscan={400}
-            itemContent={(index, dish) => {
-              if ('dish_type_id' in dish) {
-                return (
-                  <>
-                    {index !== 0 && <Spacer y={5} />}
-                    <Text h2>{dish.dish_type_name}</Text>
-                  </>
-                );
-              }
-              if (!dish.is_available) {
-                <></>;
-              }
+      <RestaurantInfo />
+      <Grid.Container>
+        <Grid xs justify="flex-start">
+          <DishFilter onChange={handleChangeFilterText} />
+        </Grid>
+        <Grid xs justify="flex-end">
+          <Button ghost onPress={handleCreateInvitation}>
+            Create an invitation
+          </Button>
+        </Grid>
+      </Grid.Container>
+      {dishTypes.length > 0 && (
+        <Virtuoso
+          useWindowScroll
+          style={{ height: '100%' }}
+          data={dishes}
+          overscan={400}
+          itemContent={(index, dish) => {
+            const isDish = 'price' in dish;
+            if (!isDish) {
               return (
                 <>
-                  <Card
-                    key={dish.id}
-                    price={
-                      dish.discount_price ? dish.discount_price : dish.price
-                    }
-                    name={dish.name}
-                    photos={dish.photos}
-                    description={dish.description}
-                    id={dish.id}
-                    dishTypeId={dish.dishTypeId}
-                    orderId={dish.orderId}
-                  />
-                  <Spacer y={1} key={`spacer-${dish.id}`} />
+                  {index !== 0 && <Spacer y={5} />}
+                  <Text h2>{dish.name}</Text>
                 </>
               );
-            }}
-          />
-        </>
+            }
+            if (!dish.isAvailable) {
+              <></>;
+            }
+            return (
+              <>
+                <Card
+                  key={dish.id}
+                  {...dish}
+                  price={dish.discountPrice ? dish.discountPrice : dish.price}
+                />
+                <Spacer y={1} key={`spacer-${dish.id}`} />
+              </>
+            );
+          }}
+        />
       )}
-      <div style={{ position: 'fixed', right: '3em', bottom: '3em' }}>
-        <Popover placement="left-bottom">
-          <Popover.Trigger>
-            <Button auto flat>
-              Open Popover
-            </Button>
-          </Popover.Trigger>
-          <Popover.Content>
-            <div style={{ width: '20em' }}>
-              {dishes.reduce((acc: any[], dish: dishItem) => {
-                if ('dish_type_id' in dish) {
-                  return acc;
-                }
-                const order = cart[dish.orderId];
-                if (!order) {
-                  return acc;
-                }
-                const dishIndex = order.findIndex(
-                  (item) => item.dishId === dish.id
-                );
-                if (dishIndex === -1 || order[dishIndex].quantity === 0) {
-                  return acc;
-                }
-                return [
-                  ...acc,
-                  <CartItem
-                    key={dish.id}
-                    price={
-                      dish.discount_price ? dish.discount_price : dish.price
-                    }
-                    name={dish.name}
-                    photos={dish.photos}
-                    description={dish.description}
-                    id={dish.id}
-                    dishTypeId={dish.dishTypeId}
-                    orderId={dish.orderId}
-                  />,
-                ];
-              }, [])}
-              <Button auto flat onClick={() => {}} css={{ m: 'auto' }}>
-                Confirm
-              </Button>
-            </div>
-          </Popover.Content>
-        </Popover>
-      </div>
     </Container>
   );
 };
