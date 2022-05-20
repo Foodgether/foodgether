@@ -14,7 +14,9 @@ export default async (
 ) => {
   const { token } = req.cookies;
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res
+      .status(401)
+      .json({ message: "You must be logged in before accessing this" });
   }
   try {
     const phoneNumber = verifyToken(token);
@@ -23,7 +25,7 @@ export default async (
     }
     req.phoneNumber = phoneNumber;
     const redisClient = getRedisClient();
-    let user;
+    let user: User;
     let userString = await redisClient.get(`user-${phoneNumber}`);
     if (!userString) {
       user = await getUser(phoneNumber);
