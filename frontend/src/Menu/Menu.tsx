@@ -90,7 +90,7 @@ const Menu = () => {
     const createInvitationResponse =
       (await createRawResponse.json()) as GetInviteResult;
     copyToClipboard(
-      `${window.location.origin}/invite/${createInvitationResponse.inviteId}`
+      `${window.location.origin}${BASE_PATH}/invite/${createInvitationResponse.inviteId}`
     );
     await Swal.fire({
       position: 'center',
