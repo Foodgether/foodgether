@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
-import Card from "./Card";
 import { Dish, DishType } from "../interfaces/menu";
 import { GetInviteResult } from "../interfaces/request";
 import {
@@ -13,16 +12,14 @@ import {
   Spacer,
   Text,
 } from "@nextui-org/react";
-import { Virtuoso } from "react-virtuoso";
 import { useAtom } from "jotai";
-import { cartAtom } from "../atoms";
+import { cartAtom, userAtom } from "../atoms";
 import { BACKEND_URL, BASE_PATH } from "../config";
 import Swal from "sweetalert2";
 import Loader from "../components/Loader";
+import InviteCommon from "./InviteCommon";
+import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import RestaurantInfo from "../components/RestaurantInfo";
-import SearchIcon from "../components/SearchIcon";
-import CartContent from "./CartContent";
-import DishFilter from "../components/DishFilter";
 
 interface DishItem extends Dish {
   dishTypeId: number;
@@ -30,6 +27,11 @@ interface DishItem extends Dish {
 }
 
 export type DishRenderItem = DishItem | DishType;
+
+enum InviteTab {
+  MENU = 0,
+  ORDERS = 1,
+}
 
 const Invite = () => {
   const location = useLocation();
@@ -42,6 +44,7 @@ const Invite = () => {
   const [cart, _] = useAtom(cartAtom);
   const [filterText, setFilterText] = useState("");
   const [inviteInfo, setInviteInfo] = useState<GetInviteResult>();
+  const [user, __] = useAtom(userAtom);
 
   useEffect(() => {
     const pushedInviteInfo = location.state as GetInviteResult;
@@ -79,7 +82,7 @@ const Invite = () => {
     setFilterText(e.target.value);
   };
 
-  if (!inviteInfo) {
+  if (!inviteInfo || !("id" in user) || user.fetching) {
     return <Loader isShowingLoader={!inviteInfo} loadingMessage="" />;
   }
   const { menu, restaurant } = inviteInfo;
@@ -118,73 +121,46 @@ const Invite = () => {
       }, {})
     );
   }, {});
-
   return (
-    <Container
-      fluid
-      justify="center"
-      alignItems="center"
-      css={{ p: 50, height: "800px", mt: "$16" }}
-    >
+    <Container>
       <RestaurantInfo {...restaurant} />
-      <Spacer y={2} />
-      <Grid.Container>
-        <Grid xs justify="flex-start">
-          <DishFilter onChange={handleChangeFilterText} />
-        </Grid>
-        <Grid xs justify="flex-end"></Grid>
-      </Grid.Container>
-
-      {inviteInfo.menu.dishTypes.length > 0 && (
-        <Virtuoso
-          useWindowScroll
-          style={{ height: "100%" }}
-          data={dishes}
-          overscan={400}
-          itemContent={(index, dish) => {
-            const isDish = "price" in dish;
-            if (!isDish) {
-              return (
-                <>
-                  {index !== 0 && <Spacer y={5} />}
-                  <Text h2>{dish.name}</Text>
-                </>
-              );
-            }
-            if (!dish.isAvailable) {
-              <></>;
-            }
-            return (
-              <>
-                <Card
-                  key={dish.id}
-                  {...dish}
-                  price={dish.discountPrice ? dish.discountPrice : dish.price}
-                />
-                <Spacer y={1} key={`spacer-${dish.id}`} />
-              </>
-            );
-          }}
+      <Spacer y={1} />
+      {user.id === inviteInfo.createdUserId ? (
+        <Tabs defaultIndex={InviteTab.MENU}>
+          <TabList>
+            <Tab className="react-tabs__tab text-xl font-bold text-pink-900">
+              Menu
+            </Tab>
+            <Tab className="react-tabs__tab text-xl font-bold text-pink-900">
+              Orders
+            </Tab>
+          </TabList>
+          <TabPanel>
+            <Spacer y={1} />
+            <InviteCommon
+              inviteInfo={inviteInfo}
+              restaurant={restaurant}
+              cart={cart}
+              currentCart={currentCart}
+              dishes={dishes}
+              prices={prices}
+              handleChangeFilterText={handleChangeFilterText}
+            />
+          </TabPanel>
+          <TabPanel>
+            <> </>
+          </TabPanel>
+        </Tabs>
+      ) : (
+        <InviteCommon
+          inviteInfo={inviteInfo}
+          restaurant={restaurant}
+          cart={cart}
+          currentCart={currentCart}
+          dishes={dishes}
+          prices={prices}
+          handleChangeFilterText={handleChangeFilterText}
         />
-      )}
-      {currentCart && currentCart.length !== 0 && (
-        <div style={{ position: "fixed", right: "3em", bottom: "3em" }}>
-          <Popover placement="top">
-            <Popover.Trigger>
-              <Button auto flat>
-                <SearchIcon />
-              </Button>
-            </Popover.Trigger>
-            <Popover.Content>
-              <CartContent
-                prices={prices}
-                dishes={dishes}
-                cart={cart}
-                currentCart={currentCart}
-              />
-            </Popover.Content>
-          </Popover>
-        </div>
       )}
     </Container>
   );

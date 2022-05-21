@@ -5,7 +5,7 @@ import Menu from "./Menu/Menu";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./Home/Home";
 import { useAtom } from "jotai";
-import { createTheme, NextUIProvider } from "@nextui-org/react";
+import { Container, createTheme, NextUIProvider } from "@nextui-org/react";
 import "./index.css";
 import { tokenAtom, userAtom } from "./atoms";
 import Profile from "./Profile/Profile";

@@ -26,7 +26,7 @@ const RestaurantInfo = (props: RestaurantInfoProps) => {
         </Text>
         <Spacer y={0.5} />
         <Text h5 css={{ color: "$red500", fontWeight: "$semibold" }}>
-          {props.priceRange.minPrice} - {props.priceRange.maxPrice}
+          {props.priceRange.minPrice}đ - {props.priceRange.maxPrice}đ
         </Text>
         <Spacer y={0.5} />
 

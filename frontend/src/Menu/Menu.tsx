@@ -116,7 +116,7 @@ const Menu = () => {
           <DishFilter onChange={handleChangeFilterText} />
         </Grid>
         <Grid xs justify="flex-end">
-          <Button ghost onPress={handleCreateInvitation}>
+          <Button ghost onClick={handleCreateInvitation}>
             Create an invitation
           </Button>
         </Grid>
@@ -127,7 +127,7 @@ const Menu = () => {
           style={{ height: "100%" }}
           data={dishes}
           overscan={400}
-          itemContent={(index, dish) => {
+          itemContent={(index: number, dish: dishItem) => {
             const isDish = "price" in dish;
             if (!isDish) {
               return (

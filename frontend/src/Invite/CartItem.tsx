@@ -97,7 +97,7 @@ const CartItem = (props: CardMenuProps) => {
               <>
                 <Button.Group>
                   <Button
-                    onPress={handleDecrement}
+                    onClick={handleDecrement}
                     color="gradient"
                     auto
                     ghost
@@ -110,7 +110,7 @@ const CartItem = (props: CardMenuProps) => {
                     {quantity}
                   </Text>
                   <Button
-                    onPress={handleIncrement}
+                    onClick={handleIncrement}
                     color="gradient"
                     auto
                     ghost
