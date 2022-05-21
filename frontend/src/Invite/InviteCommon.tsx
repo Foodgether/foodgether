@@ -16,12 +16,12 @@ import SearchIcon from "../components/SearchIcon";
 import CartContent from "./CartContent";
 import DishFilter from "../components/DishFilter";
 import { Restaurant } from "../interfaces/restaurant";
-import { CartAtom, DishInOrder } from "../atoms";
+import { CartAtom, DishInOrder, userAtom } from "../atoms";
 import { DishRenderItem } from "./Invite";
+import { useAtom } from "jotai";
 
 interface InviteCommonProps {
   inviteInfo: GetInviteResult;
-  restaurant: Restaurant;
   cart: CartAtom;
   currentCart: DishInOrder[];
   dishes: DishRenderItem[];
@@ -32,7 +32,6 @@ interface InviteCommonProps {
 }
 
 const InviteCommon = ({
-  restaurant,
   inviteInfo,
   cart,
   currentCart,
@@ -40,6 +39,9 @@ const InviteCommon = ({
   prices,
   handleChangeFilterText,
 }: InviteCommonProps) => {
+  const [user, _] = useAtom(userAtom);
+  const isLoggedIn = !user.fetching && user.loggedIn;
+
   return (
     <Container
       fluid
@@ -79,6 +81,7 @@ const InviteCommon = ({
                   key={dish.id}
                   {...dish}
                   price={dish.discountPrice ? dish.discountPrice : dish.price}
+                  isLoggedIn={isLoggedIn}
                 />
                 <Spacer y={1} key={`spacer-${dish.id}`} />
               </>

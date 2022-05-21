@@ -38,7 +38,8 @@ const Index = () => {
       .then((result) => {
         if (!result.ok) {
           if (
-            window.location.pathname !== (BASE_PATH ? `${BASE_PATH}/` : "/")
+            window.location.pathname !== (BASE_PATH ? `${BASE_PATH}/` : "/") &&
+            !window.location.pathname.includes("invite")
           ) {
             window.location.replace(BASE_PATH ? BASE_PATH : "/");
           }

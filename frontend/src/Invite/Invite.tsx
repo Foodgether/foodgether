@@ -82,7 +82,7 @@ const Invite = () => {
     setFilterText(e.target.value);
   };
 
-  if (!inviteInfo || !("id" in user) || user.fetching) {
+  if (!inviteInfo || user.fetching) {
     return <Loader isShowingLoader={!inviteInfo} loadingMessage="" />;
   }
   const { menu, restaurant } = inviteInfo;
@@ -125,7 +125,7 @@ const Invite = () => {
     <Container>
       <RestaurantInfo {...restaurant} />
       <Spacer y={1} />
-      {user.id === inviteInfo.createdUserId ? (
+      {"id" in user && user.id === inviteInfo.createdUserId ? (
         <Tabs defaultIndex={InviteTab.MENU}>
           <TabList>
             <Tab className="react-tabs__tab text-xl font-bold text-pink-900">
@@ -139,7 +139,6 @@ const Invite = () => {
             <Spacer y={1} />
             <InviteCommon
               inviteInfo={inviteInfo}
-              restaurant={restaurant}
               cart={cart}
               currentCart={currentCart}
               dishes={dishes}
@@ -154,7 +153,6 @@ const Invite = () => {
       ) : (
         <InviteCommon
           inviteInfo={inviteInfo}
-          restaurant={restaurant}
           cart={cart}
           currentCart={currentCart}
           dishes={dishes}

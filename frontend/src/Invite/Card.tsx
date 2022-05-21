@@ -1,13 +1,14 @@
-import React from 'react';
+import React from "react";
 import {
   Button,
   Card as NextCard,
   Grid,
   Spacer,
   Text,
-} from '@nextui-org/react';
-import { useAtom } from 'jotai';
-import { cartAtom } from '../atoms';
+} from "@nextui-org/react";
+import { useAtom } from "jotai";
+import { cartAtom } from "../atoms";
+import Swal from "sweetalert2";
 
 interface CardMenuProps {
   id: number;
@@ -21,6 +22,7 @@ interface CardMenuProps {
   description?: string;
   dishTypeId: number;
   orderId: string;
+  isLoggedIn: boolean;
 }
 
 type Photo = {
@@ -43,13 +45,24 @@ const Card = (props: CardMenuProps) => {
   const { name, price, photos } = props;
   const photoLastIndex = photos.length - 2;
   const photo = photos[photoLastIndex];
+
   const handleIncrement = () => {
     handleOrder(quantity + 1);
   };
   const handleDecrement = () => {
     handleOrder(quantity - 1);
   };
-  const handleOrder = (quantity: number) => {
+  const handleOrder = async (quantity: number) => {
+    if (!props.isLoggedIn) {
+      await Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Please login to order",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
     let newCart;
 
     if (!cart[props.orderId]) {
@@ -101,14 +114,14 @@ const Card = (props: CardMenuProps) => {
             />
           </Grid>
           <Grid xs={1} md={0.5} />
-          <Grid xs={12} md direction={'column'}>
+          <Grid xs={12} md direction={"column"}>
             <Text h2>{name}</Text>
-            <Text h3 css={{ color: '$red500', fontWeight: '$semibold' }}>
+            <Text h3 css={{ color: "$red500", fontWeight: "$semibold" }}>
               {price.text}
             </Text>
             {props.description && <Spacer y={0.5} />}
             {props.description && (
-              <Text css={{ color: '$accents7', fontWeight: '$semibold' }}>
+              <Text css={{ color: "$accents7", fontWeight: "$semibold" }}>
                 {props.description}
               </Text>
             )}
@@ -120,11 +133,11 @@ const Card = (props: CardMenuProps) => {
                   color="gradient"
                   auto
                   ghost
-                  css={{ width: '3em', height: '3em' }}
+                  css={{ width: "3em", height: "3em" }}
                 >
                   -
                 </Button>
-                <Text h3 css={{ color: '$red500', fontWeight: '$semibold' }}>
+                <Text h3 css={{ color: "$red500", fontWeight: "$semibold" }}>
                   {quantity}
                 </Text>
                 <Button
@@ -132,7 +145,7 @@ const Card = (props: CardMenuProps) => {
                   color="gradient"
                   auto
                   ghost
-                  css={{ width: '3em', height: '3em' }}
+                  css={{ width: "3em", height: "3em" }}
                 >
                   +
                 </Button>
@@ -145,7 +158,7 @@ const Card = (props: CardMenuProps) => {
                 color="gradient"
                 auto
                 ghost
-                css={{ width: '10em' }}
+                css={{ width: "10em" }}
               >
                 <Text h5>Order</Text>
               </Button>
