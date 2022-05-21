@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Card from "./Card";
 import { Dish, DishType } from "../interfaces/menu";
-import { GetMenuResult } from "../interfaces/request";
+import { GetMenuResult, GetInviteResult } from "../interfaces/request";
 import {
   Button,
   Container,
@@ -16,7 +16,6 @@ import { useAtom } from "jotai";
 import { currentStateAtom } from "../atoms";
 import { BACKEND_URL, BASE_PATH } from "../config";
 import Swal from "sweetalert2";
-import { GetInviteResult } from "../Invite/interface";
 import RestaurantInfo from "../components/RestaurantInfo";
 import DishFilter from "../components/DishFilter";
 
