@@ -53,8 +53,6 @@ const Menu = () => {
     return acc.concat(dishType).concat(processedDishes);
   }, []);
 
-  7;
-
   const copyToClipboard = (content: string) => {
     const el = document.createElement("textarea");
     el.value = content;

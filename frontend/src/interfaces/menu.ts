@@ -16,17 +16,15 @@ export type Dish = {
   id: number;
   name: string;
   description?: string;
-  price: {
-    text: string;
-    unit: string;
-    value: number;
-  };
-  discountPrice?: {
-    text: string;
-    unit: string;
-    value: number;
-  };
+  price: Price;
+  discountPrice?: Price;
   isAvailable: boolean;
   isActive: boolean;
   photos: Photo[];
+};
+
+export type Price = {
+  text: string;
+  unit: string;
+  value: number;
 };

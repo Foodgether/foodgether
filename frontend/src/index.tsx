@@ -7,7 +7,7 @@ import Home from "./Home/Home";
 import { useAtom } from "jotai";
 import { createTheme, NextUIProvider } from "@nextui-org/react";
 import "./index.css";
-import { currentStateAtom, tokenAtom, userAtom } from "./atoms";
+import { tokenAtom, userAtom } from "./atoms";
 import Profile from "./Profile/Profile";
 import Invite from "./Invite/Invite";
 
@@ -49,6 +49,7 @@ const Index = () => {
         }
       })
       .then((result) => {
+        if (!result) return;
         setToken(result.token);
         setUser({ ...result.user, fetching: false, loggedIn: true });
       });

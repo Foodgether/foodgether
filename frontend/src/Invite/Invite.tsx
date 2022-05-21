@@ -21,7 +21,6 @@ import Swal from "sweetalert2";
 import Loader from "../components/Loader";
 import RestaurantInfo from "../components/RestaurantInfo";
 import SearchIcon from "../components/SearchIcon";
-import CartIcon from "../components/CartIcon";
 import CartContent from "./CartContent";
 import DishFilter from "../components/DishFilter";
 
@@ -105,7 +104,21 @@ const Invite = () => {
     }
     return acc.concat(dishType).concat(processedDishes);
   }, []);
+
   const currentCart = cart[inviteId];
+
+  const prices = menu.dishTypes.reduce((priceDict, dishType) => {
+    return Object.assign(
+      priceDict,
+      dishType.dishes.reduce((acc, dish) => {
+        if (dish.discountPrice) {
+          return Object.assign(acc, { [dish.id]: dish.discountPrice });
+        }
+        return Object.assign(acc, { [dish.id]: dish.price });
+      }, {})
+    );
+  }, {});
+
   return (
     <Container
       fluid
@@ -123,38 +136,36 @@ const Invite = () => {
       </Grid.Container>
 
       {inviteInfo.menu.dishTypes.length > 0 && (
-        <>
-          <Virtuoso
-            useWindowScroll
-            style={{ height: "100%" }}
-            data={dishes}
-            overscan={400}
-            itemContent={(index, dish) => {
-              const isDish = "price" in dish;
-              if (!isDish) {
-                return (
-                  <>
-                    {index !== 0 && <Spacer y={5} />}
-                    <Text h2>{dish.name}</Text>
-                  </>
-                );
-              }
-              if (!dish.isAvailable) {
-                <></>;
-              }
+        <Virtuoso
+          useWindowScroll
+          style={{ height: "100%" }}
+          data={dishes}
+          overscan={400}
+          itemContent={(index, dish) => {
+            const isDish = "price" in dish;
+            if (!isDish) {
               return (
                 <>
-                  <Card
-                    key={dish.id}
-                    {...dish}
-                    price={dish.discountPrice ? dish.discountPrice : dish.price}
-                  />
-                  <Spacer y={1} key={`spacer-${dish.id}`} />
+                  {index !== 0 && <Spacer y={5} />}
+                  <Text h2>{dish.name}</Text>
                 </>
               );
-            }}
-          />
-        </>
+            }
+            if (!dish.isAvailable) {
+              <></>;
+            }
+            return (
+              <>
+                <Card
+                  key={dish.id}
+                  {...dish}
+                  price={dish.discountPrice ? dish.discountPrice : dish.price}
+                />
+                <Spacer y={1} key={`spacer-${dish.id}`} />
+              </>
+            );
+          }}
+        />
       )}
       {currentCart && currentCart.length !== 0 && (
         <div style={{ position: "fixed", right: "3em", bottom: "3em" }}>
@@ -166,10 +177,10 @@ const Invite = () => {
             </Popover.Trigger>
             <Popover.Content>
               <CartContent
+                prices={prices}
                 dishes={dishes}
                 cart={cart}
                 currentCart={currentCart}
-                menu={menu}
               />
             </Popover.Content>
           </Popover>
