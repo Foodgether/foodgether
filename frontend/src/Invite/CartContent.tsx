@@ -1,9 +1,9 @@
-import { Button, Text } from '@nextui-org/react';
-import React from 'react';
-import { CartAtom, DishInOrder } from '../atoms';
-import CartItem from './CartItem';
-import { DishType } from './interface';
-import { DishRenderItem } from './Invite';
+import React from "react";
+import { Button, Text } from "@nextui-org/react";
+import { CartAtom, DishInOrder } from "../atoms";
+import CartItem from "./CartItem";
+import { DishType } from "../interfaces/menu";
+import { DishRenderItem } from "./Invite";
 
 interface CartContentProps {
   dishes: DishRenderItem[];
@@ -37,9 +37,9 @@ const CartContent = ({ dishes, cart, currentCart, menu }: CartContentProps) => {
   }, 0);
 
   return (
-    <div style={{ width: '20em' }}>
+    <div style={{ width: "20em" }}>
       {dishes.reduce((acc: any[], dish: DishRenderItem) => {
-        const isDish = 'price' in dish;
+        const isDish = "price" in dish;
         if (!isDish) {
           return acc;
         }
@@ -60,7 +60,7 @@ const CartContent = ({ dishes, cart, currentCart, menu }: CartContentProps) => {
         );
       }, [])}
       <Text>{totalPrice}</Text>
-      <Button auto flat onClick={handleConfirmOrder} css={{ m: 'auto' }}>
+      <Button auto flat onClick={handleConfirmOrder} css={{ m: "auto" }}>
         Confirm
       </Button>
     </div>

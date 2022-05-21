@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
 import Card from "./Card";
-import { Dish, DishType, GetInviteResult } from "./interface";
+import { Dish, DishType } from "../interfaces/menu";
+import { GetInviteResult } from "../interfaces/request";
 import {
   Button,
   Container,

@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 import {
   Button,
   Card as NextCard,
   Grid,
   Spacer,
   Text,
-} from '@nextui-org/react';
-import { useAtom } from 'jotai';
-import { cartAtom } from '../atoms';
+} from "@nextui-org/react";
+import { useAtom } from "jotai";
+import { cartAtom } from "../atoms";
 
 interface CardMenuProps {
   id: number;
@@ -87,9 +87,9 @@ const CartItem = (props: CardMenuProps) => {
               alt={name}
             />
           </Grid>
-          <Grid xs={12} md={6} direction={'column'}>
+          <Grid xs={12} md={6} direction={"column"}>
             <Text h5>{name}</Text>
-            <Text h6 css={{ color: '$red500', fontWeight: '$semibold' }}>
+            <Text h6 css={{ color: "$red500", fontWeight: "$semibold" }}>
               {price.text}
             </Text>
             <Spacer y={0.5} />
@@ -101,12 +101,12 @@ const CartItem = (props: CardMenuProps) => {
                     color="gradient"
                     auto
                     ghost
-                    css={{ width: '1em', height: '2em' }}
+                    css={{ width: "1em", height: "2em" }}
                     size="sm"
                   >
                     -
                   </Button>
-                  <Text h6 css={{ color: '$red500', fontWeight: '$semibold' }}>
+                  <Text h6 css={{ color: "$red500", fontWeight: "$semibold" }}>
                     {quantity}
                   </Text>
                   <Button
@@ -114,7 +114,7 @@ const CartItem = (props: CardMenuProps) => {
                     color="gradient"
                     auto
                     ghost
-                    css={{ width: '1em', height: '2em' }}
+                    css={{ width: "1em", height: "2em" }}
                     size="sm"
                   >
                     +

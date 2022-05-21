@@ -1,19 +1,19 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Card from "./Card";
-import { Dish, DishType, GetMenuResult } from "./interface";
+import { Dish, DishType } from "../interfaces/menu";
+import { GetMenuResult } from "../interfaces/request";
 import {
   Button,
   Container,
   FormElement,
   Grid,
-  Input,
   Spacer,
   Text,
 } from "@nextui-org/react";
 import { Virtuoso } from "react-virtuoso";
 import { useAtom } from "jotai";
-import { cartAtom, currentStateAtom } from "../atoms";
+import { currentStateAtom } from "../atoms";
 import { BACKEND_URL, BASE_PATH } from "../config";
 import Swal from "sweetalert2";
 import { GetInviteResult } from "../Invite/interface";

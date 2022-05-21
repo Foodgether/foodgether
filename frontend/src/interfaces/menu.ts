@@ -1,14 +1,10 @@
-import { Restaurant } from "../interfaces/restaurant";
-import { Photo } from "../interfaces/shared";
+import { Photo } from "./shared";
 
-export type GetMenuResult = {
-  menu: {
-    dishTypes: DishType[];
-    id: string;
-    restaurantId: number;
-  };
-  restaurant: Restaurant;
-};
+export interface Menu {
+  dishTypes: DishType[];
+  id: string;
+  restaurantId: number;
+}
 
 export type DishType = {
   dishes: Dish[];
