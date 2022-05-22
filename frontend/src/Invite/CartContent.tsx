@@ -1,16 +1,16 @@
 import React from 'react';
 import { Button, Text } from '@nextui-org/react';
-import { CartAtom, DishInOrder } from '../atoms';
+import { DishInOrder, orderAtom } from '../atoms';
 import CartItem from './CartItem';
 import { Price } from '../interfaces/menu';
 import { DishRenderItem } from './Invite';
 import { BACKEND_URL } from '../config';
 import Swal from 'sweetalert2';
+import { useAtom } from 'jotai';
 
 interface CartContentProps {
   inviteId: string;
   dishes: DishRenderItem[];
-  cart: CartAtom;
   currentCart: DishInOrder[];
   prices: {
     [key: string]: Price;
@@ -19,14 +19,15 @@ interface CartContentProps {
 
 const CartContent = ({
   dishes,
-  cart,
   currentCart,
   prices,
   inviteId,
 }: CartContentProps) => {
-  const handleSendOrder = async () => {
+  const [order, setOrder] = useAtom(orderAtom);
+
+  const submitNewOrder = async () => {
     const rawSendOrderResponse = await fetch(
-      `${BACKEND_URL}/order/${inviteId}/order`,
+      `${BACKEND_URL}/order/${inviteId}/submit`,
       {
         method: 'POST',
         headers: {
@@ -55,6 +56,14 @@ const CartContent = ({
       showConfirmButton: false,
       timer: 1500,
     });
+    setOrder({ ...order, isSubmitted: true, orderId: SendOrderResponse.id });
+  };
+
+  const handleSendOrder = async () => {
+    if (!order.isSubmitted && !order.orderId) {
+      await submitNewOrder();
+      return;
+    }
   };
 
   const totalPrice = currentCart.reduce((total, item) => {
@@ -68,11 +77,10 @@ const CartContent = ({
         if (!isDish) {
           return acc;
         }
-        const order = cart[dish.orderId];
-        if (!order) {
+        if (!currentCart) {
           return acc;
         }
-        const targetDish = order.find((item) => item.dishId === dish.id);
+        const targetDish = currentCart.find((item) => item.dishId === dish.id);
         if (!targetDish || targetDish.quantity === 0) {
           return acc;
         }

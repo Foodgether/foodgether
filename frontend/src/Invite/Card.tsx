@@ -33,13 +33,13 @@ type Photo = {
 };
 
 const Card = (props: CardMenuProps) => {
-  const [cart, setCart] = useAtom(cartAtom);
+  const [currentCart, setCart] = useAtom(cartAtom);
   let quantity = 0;
-  const order = cart[props.orderId];
-  if (order) {
-    const dishIndex = order.findIndex((item) => item.dishId === props.id);
+
+  if (currentCart) {
+    const dishIndex = currentCart.findIndex((item) => item.dishId === props.id);
     if (dishIndex !== -1) {
-      quantity = order[dishIndex].quantity;
+      quantity = currentCart[dishIndex].quantity;
     }
   }
 
@@ -64,43 +64,23 @@ const Card = (props: CardMenuProps) => {
       });
       return;
     }
-    let newCart;
 
-    if (!cart[props.orderId]) {
-      const newOrderId = [
-        { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
-      ];
-      newCart = { ...cart, [props.orderId]: newOrderId };
-    } else {
-      const order = cart[props.orderId];
-      const itemIndex = order.findIndex((item) => item.dishId === props.id);
-      if (itemIndex === -1) {
-        const newDish = [
-          ...order,
-          { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
-        ];
-        newCart = { ...cart, [props.orderId]: newDish };
-      } else {
-        let newOrder = cart[props.orderId].splice(itemIndex, 1);
-        newOrder = [
-          ...cart[props.orderId],
-          { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
-        ];
-        newCart = { ...cart, [props.orderId]: newOrder };
-      }
+    if (!currentCart) {
+      setCart([{ dishId: props.id, dishTypeId: props.dishTypeId, quantity }]);
+      return;
     }
-    if (quantity === 0) {
-      const newOrder = cart[props.orderId].filter(
-        (dish) => dish.quantity !== 0
+    const item = currentCart.find((item) => item.dishId === props.id);
+    if (!item) {
+      setCart(
+        currentCart.concat([
+          { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
+        ])
       );
-      if (newOrder.length === 0) {
-        newCart = { ...cart };
-        delete newCart[props.orderId];
-      } else {
-        newCart = { ...cart, [props.orderId]: newOrder };
-      }
+      return;
     }
-    setCart(newCart);
+    item.quantity = quantity;
+    const newCart = currentCart.concat([]);
+    setCart(newCart.filter((dish) => dish.quantity !== 0));
   };
 
   return (

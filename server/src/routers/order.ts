@@ -9,7 +9,7 @@ import authenticate from "../middlewares/authenticate";
 
 const router = express.Router();
 
-router.post("/:inviteId/order", authenticate, createOrderController); // Order
+router.post("/:inviteId/submit", authenticate, createOrderController); // Order
 router.get("/invite/:inviteId", getInviteController); // Get invite info
 router.post("/invite", authenticate, createInviteController); // Create invite
 router.post("/:inviteId/confirm", authenticate, confirmOrderController); // Confirm order

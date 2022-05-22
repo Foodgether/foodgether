@@ -33,7 +33,7 @@ const Invite = () => {
     return <></>;
   }
 
-  const [cart, _] = useAtom(cartAtom);
+  const [currentCart, _] = useAtom(cartAtom);
   const [filterText, setFilterText] = useState('');
   const [inviteInfo, setInviteInfo] = useState<GetInviteResult>();
   const [user, __] = useAtom(userAtom);
@@ -100,8 +100,6 @@ const Invite = () => {
     return acc.concat(dishType).concat(processedDishes);
   }, []);
 
-  const currentCart = cart[inviteId];
-
   const prices = menu.dishTypes.reduce((priceDict, dishType) => {
     return Object.assign(
       priceDict,
@@ -131,7 +129,6 @@ const Invite = () => {
             <Spacer y={1} />
             <InviteCommon
               inviteInfo={inviteInfo}
-              cart={cart}
               currentCart={currentCart}
               dishes={dishes}
               prices={prices}
@@ -145,7 +142,6 @@ const Invite = () => {
       ) : (
         <InviteCommon
           inviteInfo={inviteInfo}
-          cart={cart}
           currentCart={currentCart}
           dishes={dishes}
           prices={prices}

@@ -5,10 +5,15 @@ export const userAtom = atom<UserAtom | UserAtomAuthenticated>({
   loggedIn: false,
 });
 export const tokenAtom = atom<TokenAtom>('');
-export const cartAtom = atom<CartAtom>({});
+export const cartAtom = atom<DishInOrder[]>([]);
 export const currentStateAtom = atom<CurrentStateAtom>({
   currentMenu: '',
   currentRestaurant: 0,
+});
+
+export const orderAtom = atom<OrderAtom>({
+  isSubmitted: false,
+  orderId: '',
 });
 
 type TokenAtom = string;
@@ -27,9 +32,7 @@ interface UserAtomAuthenticated extends UserAtom {
   updatedAt: Date;
 }
 
-export interface CartAtom {
-  [key: string]: DishInOrder[];
-}
+export type CartAtom = DishInOrder[];
 
 export interface DishInOrder {
   dishId: number;
@@ -38,6 +41,11 @@ export interface DishInOrder {
 }
 
 interface CurrentStateAtom {
-  currentMenu: string;
   currentRestaurant: number;
+  currentMenu: string;
+}
+
+export interface OrderAtom {
+  isSubmitted: boolean;
+  orderId: string;
 }

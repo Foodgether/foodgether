@@ -15,14 +15,13 @@ import { Virtuoso } from 'react-virtuoso';
 import SearchIcon from '../components/SearchIcon';
 import CartContent from './CartContent';
 import DishFilter from '../components/DishFilter';
-import { CartAtom, DishInOrder, userAtom } from '../atoms';
+import { DishInOrder, userAtom } from '../atoms';
 import { DishRenderItem } from './Invite';
 import { useAtom } from 'jotai';
 import { OrderStatus } from '../enums';
 
 interface InviteCommonProps {
   inviteInfo: GetInviteResult;
-  cart: CartAtom;
   currentCart: DishInOrder[];
   dishes: DishRenderItem[];
   prices: {
@@ -33,7 +32,6 @@ interface InviteCommonProps {
 
 const InviteCommon = ({
   inviteInfo,
-  cart,
   currentCart,
   dishes,
   prices,
@@ -102,7 +100,6 @@ const InviteCommon = ({
               <CartContent
                 prices={prices}
                 dishes={dishes}
-                cart={cart}
                 currentCart={currentCart}
                 inviteId={inviteInfo.inviteId}
               />

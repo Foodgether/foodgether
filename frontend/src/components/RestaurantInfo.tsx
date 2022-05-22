@@ -1,6 +1,6 @@
-import { Grid, Image, Spacer, Text } from "@nextui-org/react";
-import React from "react";
-import { Restaurant } from "../interfaces/restaurant";
+import { Grid, Image, Spacer, Text } from '@nextui-org/react';
+import React from 'react';
+import { Restaurant } from '../interfaces/restaurant';
 
 type RestaurantInfoProps = Restaurant;
 
@@ -11,21 +11,21 @@ const RestaurantInfo = (props: RestaurantInfoProps) => {
       : props.photos.length - 1;
   const photo = props.photos[photoIndex];
   return (
-    <Grid.Container css={{ backgroundColor: "$accents0" }}>
+    <Grid.Container css={{ backgroundColor: '$accents0' }}>
       <Grid xs={12} md={5} justify="center" alignItems="center">
         <Image src={photo.value} objectFit="scale-down" />
       </Grid>
       <Grid xs={0} md={0.5} />
       <Grid xs={12} md={6.5} direction="column">
-        <a target="_blank" href={props.url}>
+        <a target="_blank" href={props.url} rel="noreferrer">
           <Text h2>{props.name}</Text>
         </a>
         <Spacer y={0.5} />
-        <Text h5 css={{ color: "$accents7", fontWeight: "$semibold" }}>
+        <Text h5 css={{ color: '$accents7', fontWeight: '$semibold' }}>
           {props.address}
         </Text>
         <Spacer y={0.5} />
-        <Text h5 css={{ color: "$red500", fontWeight: "$semibold" }}>
+        <Text h5 css={{ color: '$red500', fontWeight: '$semibold' }}>
           {props.priceRange.minPrice}đ - {props.priceRange.maxPrice}đ
         </Text>
         <Spacer y={0.5} />
