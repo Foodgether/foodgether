@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
-import Card from './Card';
-import { Dish, DishType, GetInviteResult } from './interface';
-import {
-  Button,
-  Container,
-  FormElement,
-  Grid,
-  Input,
-  Popover,
-  Spacer,
-  Text,
-} from '@nextui-org/react';
-import { Virtuoso } from 'react-virtuoso';
+import { Dish, DishType } from '../interfaces/menu';
+import { GetInviteResult } from '../interfaces/request';
+import { Container, FormElement, Spacer } from '@nextui-org/react';
 import { useAtom } from 'jotai';
-import { cartAtom } from '../atoms';
+import { cartAtom, orderAtom, userAtom } from '../atoms';
 import { BACKEND_URL, BASE_PATH } from '../config';
 import Swal from 'sweetalert2';
 import Loader from '../components/Loader';
+import InviteCommon from './InviteCommon';
+import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import RestaurantInfo from '../components/RestaurantInfo';
-import SearchIcon from '../components/SearchIcon';
-import CartIcon from '../components/CartIcon';
-import CartContent from './CartContent';
-import DishFilter from '../components/DishFilter';
+import OrderInfo from './OrderInfo';
 
 interface DishItem extends Dish {
   dishTypeId: number;
@@ -30,6 +19,11 @@ interface DishItem extends Dish {
 }
 
 export type DishRenderItem = DishItem | DishType;
+
+enum InviteTab {
+  MENU = 0,
+  ORDERS = 1,
+}
 
 const Invite = () => {
   const location = useLocation();
@@ -39,9 +33,11 @@ const Invite = () => {
     return <></>;
   }
 
-  const [cart, _] = useAtom(cartAtom);
+  const [currentCart, setCart] = useAtom(cartAtom);
   const [filterText, setFilterText] = useState('');
   const [inviteInfo, setInviteInfo] = useState<GetInviteResult>();
+  const [user, __] = useAtom(userAtom);
+  const [order, setOrder] = useAtom(orderAtom);
 
   useEffect(() => {
     const pushedInviteInfo = location.state as GetInviteResult;
@@ -69,9 +65,20 @@ const Invite = () => {
         })
         .then((inviteInfoResult) => {
           setInviteInfo(inviteInfoResult);
+          setOrder({
+            isSubmitted: true,
+            orderId: inviteInfoResult.myOrder.id,
+          });
+          setCart(inviteInfoResult.myOrder.detail);
         });
     } else {
-      setInviteInfo(location.state as GetInviteResult);
+      const getInviteResult = location.state as GetInviteResult;
+      setInviteInfo(getInviteResult);
+      setOrder({
+        isSubmitted: true,
+        orderId: getInviteResult.myOrder.id,
+      });
+      setCart(getInviteResult.myOrder.detail);
     }
   }, []);
 
@@ -79,10 +86,10 @@ const Invite = () => {
     setFilterText(e.target.value);
   };
 
-  if (!inviteInfo) {
+  if (!inviteInfo || user.fetching) {
     return <Loader isShowingLoader={!inviteInfo} loadingMessage="" />;
   }
-  const { menu, restaurant } = inviteInfo;
+  const { menu, restaurant } = inviteInfo.order;
 
   const dishes = menu.dishTypes.reduce((acc: DishRenderItem[], dishType) => {
     const processedDishes = dishType.dishes.reduce(
@@ -92,7 +99,7 @@ const Invite = () => {
           return acc.concat({
             ...dish,
             dishTypeId: dishType.id,
-            orderId: inviteInfo.inviteId,
+            orderId: inviteInfo.order.inviteId,
           });
         }
         return acc;
@@ -104,74 +111,57 @@ const Invite = () => {
     }
     return acc.concat(dishType).concat(processedDishes);
   }, []);
-  const currentCart = cart[inviteId];
-  return (
-    <Container
-      fluid
-      justify="center"
-      alignItems="center"
-      css={{ p: 50, height: '800px', mt: '$16' }}
-    >
-      <RestaurantInfo />
-      <Grid.Container>
-        <Grid xs justify="flex-start">
-          <DishFilter onChange={handleChangeFilterText} />
-        </Grid>
-        <Grid xs justify="flex-end"></Grid>
-      </Grid.Container>
 
-      {inviteInfo.menu.dishTypes.length > 0 && (
-        <>
-          <Virtuoso
-            useWindowScroll
-            style={{ height: '100%' }}
-            data={dishes}
-            overscan={400}
-            itemContent={(index, dish) => {
-              const isDish = 'price' in dish;
-              if (!isDish) {
-                return (
-                  <>
-                    {index !== 0 && <Spacer y={5} />}
-                    <Text h2>{dish.name}</Text>
-                  </>
-                );
-              }
-              if (!dish.isAvailable) {
-                <></>;
-              }
-              return (
-                <>
-                  <Card
-                    key={dish.id}
-                    {...dish}
-                    price={dish.discountPrice ? dish.discountPrice : dish.price}
-                  />
-                  <Spacer y={1} key={`spacer-${dish.id}`} />
-                </>
-              );
-            }}
-          />
-        </>
-      )}
-      {currentCart && currentCart.length !== 0 && (
-        <div style={{ position: 'fixed', right: '3em', bottom: '3em' }}>
-          <Popover placement="top">
-            <Popover.Trigger>
-              <Button auto flat>
-                <SearchIcon />
-              </Button>
-            </Popover.Trigger>
-            <Popover.Content>
-              <CartContent
-                dishes={dishes}
-                cart={cart}
-                currentCart={currentCart}
-                menu={menu}
-              />
-            </Popover.Content>
-          </Popover>
-        </div>
+  const prices = menu.dishTypes.reduce((priceDict, dishType) => {
+    return Object.assign(
+      priceDict,
+      dishType.dishes.reduce((acc, dish) => {
+        if (dish.discountPrice) {
+          return Object.assign(acc, { [dish.id]: dish.discountPrice });
+        }
+        return Object.assign(acc, { [dish.id]: dish.price });
+      }, {})
+    );
+  }, {});
+
+  console.log(order.isSubmitted);
+
+  return (
+    <Container>
+      <RestaurantInfo {...restaurant} />
+      <Spacer y={1} />
+      {'id' in user && user.id === inviteInfo.order.createdUserId ? (
+        <Tabs defaultIndex={InviteTab.MENU}>
+          <TabList>
+            <Tab className="react-tabs__tab text-xl font-bold text-pink-900">
+              Menu
+            </Tab>
+            <Tab className="react-tabs__tab text-xl font-bold text-pink-900">
+              Orders
+            </Tab>
+          </TabList>
+          <TabPanel>
+            <Spacer y={1} />
+            <InviteCommon
+              inviteInfo={inviteInfo}
+              currentCart={currentCart}
+              dishes={dishes}
+              prices={prices}
+              handleChangeFilterText={handleChangeFilterText}
+            />
+          </TabPanel>
+          <TabPanel>
+            <OrderInfo inviteId={inviteInfo.order.inviteId} />
+          </TabPanel>
+        </Tabs>
+      ) : (
+        <InviteCommon
+          inviteInfo={inviteInfo}
+          currentCart={currentCart}
+          dishes={dishes}
+          prices={prices}
+          handleChangeFilterText={handleChangeFilterText}
+        />
       )}
     </Container>
   );

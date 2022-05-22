@@ -7,7 +7,7 @@ import {
   Text,
 } from '@nextui-org/react';
 import { useAtom } from 'jotai';
-import { cartAtom } from '../atoms';
+import { cartAtom, orderAtom } from '../atoms';
 
 interface CardMenuProps {
   id: number;
@@ -30,11 +30,12 @@ type Photo = {
 };
 
 const CartItem = (props: CardMenuProps) => {
-  const [cart, setCart] = useAtom(cartAtom);
+  const [currentCart, setCart] = useAtom(cartAtom);
+  const [order, setOrder] = useAtom(orderAtom);
+
   let quantity = 0;
-  const order = cart[props.orderId];
-  if (order) {
-    const dish = order.find((item) => item.dishId === props.id);
+  if (currentCart) {
+    const dish = currentCart.find((item) => item.dishId === props.id);
     if (dish) {
       quantity = dish.quantity;
     }
@@ -49,31 +50,23 @@ const CartItem = (props: CardMenuProps) => {
     handleOrder(quantity - 1);
   };
   const handleOrder = (quantity: number) => {
-    let newCart;
-    if (!cart[props.orderId]) {
-      const newOrderId = [
-        { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
-      ];
-      newCart = { ...cart, [props.orderId]: newOrderId };
-    } else {
-      const order = cart[props.orderId];
-      const itemIndex = order.findIndex((item) => item.dishId === props.id);
-      if (itemIndex === -1) {
-        const newDish = [
-          ...order,
-          { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
-        ];
-        newCart = { ...cart, [props.orderId]: newDish };
-      } else {
-        let newOrder = cart[props.orderId].splice(itemIndex, 1);
-        newOrder = [
-          ...cart[props.orderId],
-          { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
-        ];
-        newCart = { ...cart, [props.orderId]: newOrder };
-      }
+    if (!currentCart) {
+      setCart([{ dishId: props.id, dishTypeId: props.dishTypeId, quantity }]);
+      return;
     }
-    setCart(newCart);
+    const item = currentCart.find((item) => item.dishId === props.id);
+    if (!item) {
+      setCart(
+        currentCart.concat([
+          { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
+        ])
+      );
+      return;
+    }
+    item.quantity = quantity;
+    const newCart = currentCart.concat([]);
+    setCart(newCart.filter((dish) => dish.quantity !== 0));
+    setOrder({ ...order, isSubmitted: false });
   };
 
   return (
@@ -97,7 +90,7 @@ const CartItem = (props: CardMenuProps) => {
               <>
                 <Button.Group>
                   <Button
-                    onPress={handleDecrement}
+                    onClick={handleDecrement}
                     color="gradient"
                     auto
                     ghost
@@ -110,7 +103,7 @@ const CartItem = (props: CardMenuProps) => {
                     {quantity}
                   </Text>
                   <Button
-                    onPress={handleIncrement}
+                    onClick={handleIncrement}
                     color="gradient"
                     auto
                     ghost

@@ -1,22 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import Card from './Card';
-import { Dish, DishType, GetMenuResult } from './interface';
+import { Dish, DishType } from '../interfaces/menu';
+import { GetMenuResult, GetInviteResult } from '../interfaces/request';
 import {
   Button,
   Container,
   FormElement,
   Grid,
-  Input,
   Spacer,
   Text,
 } from '@nextui-org/react';
 import { Virtuoso } from 'react-virtuoso';
 import { useAtom } from 'jotai';
-import { cartAtom, currentStateAtom } from '../atoms';
+import { currentStateAtom } from '../atoms';
 import { BACKEND_URL, BASE_PATH } from '../config';
 import Swal from 'sweetalert2';
-import { GetInviteResult } from '../Invite/interface';
 import RestaurantInfo from '../components/RestaurantInfo';
 import DishFilter from '../components/DishFilter';
 
@@ -32,6 +31,7 @@ const Menu = () => {
   };
   const {
     menu: { dishTypes },
+    restaurant,
   } = location.state as GetMenuResult;
   const dishes = dishTypes.reduce((acc: dishItem[], dishType) => {
     if (filterText === '') {
@@ -52,8 +52,6 @@ const Menu = () => {
     }
     return acc.concat(dishType).concat(processedDishes);
   }, []);
-
-  7;
 
   const copyToClipboard = (content: string) => {
     const el = document.createElement('textarea');
@@ -90,7 +88,7 @@ const Menu = () => {
     const createInvitationResponse =
       (await createRawResponse.json()) as GetInviteResult;
     copyToClipboard(
-      `${window.location.origin}${BASE_PATH}/invite/${createInvitationResponse.inviteId}`
+      `${window.location.origin}${BASE_PATH}/invite/${createInvitationResponse.order.inviteId}`
     );
     await Swal.fire({
       position: 'center',
@@ -99,7 +97,7 @@ const Menu = () => {
       showConfirmButton: false,
       timer: 1500,
     });
-    navigate(`${BASE_PATH}/invite/${createInvitationResponse.inviteId}`, {
+    navigate(`${BASE_PATH}/invite/${createInvitationResponse.order.inviteId}`, {
       state: { ...createInvitationResponse },
     });
   };
@@ -109,15 +107,16 @@ const Menu = () => {
       fluid
       justify="center"
       alignItems="center"
-      css={{ p: 50, height: '800px', mt: '$16' }}
+      css={{ p: 50, height: '900px', mt: '$16' }}
     >
-      <RestaurantInfo />
+      <RestaurantInfo {...restaurant} />
+      <Spacer y={2} />
       <Grid.Container>
         <Grid xs justify="flex-start">
           <DishFilter onChange={handleChangeFilterText} />
         </Grid>
         <Grid xs justify="flex-end">
-          <Button ghost onPress={handleCreateInvitation}>
+          <Button ghost onClick={handleCreateInvitation}>
             Create an invitation
           </Button>
         </Grid>
@@ -128,7 +127,7 @@ const Menu = () => {
           style={{ height: '100%' }}
           data={dishes}
           overscan={400}
-          itemContent={(index, dish) => {
+          itemContent={(index: number, dish: dishItem) => {
             const isDish = 'price' in dish;
             if (!isDish) {
               return (

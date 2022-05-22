@@ -1,39 +1,108 @@
-import { Button, Text } from '@nextui-org/react';
 import React from 'react';
-import { CartAtom, DishInOrder } from '../atoms';
+import { Button, Text } from '@nextui-org/react';
+import { DishInOrder, orderAtom } from '../atoms';
 import CartItem from './CartItem';
-import { DishType } from './interface';
+import { Price } from '../interfaces/menu';
 import { DishRenderItem } from './Invite';
+import { BACKEND_URL } from '../config';
+import Swal from 'sweetalert2';
+import { useAtom } from 'jotai';
 
 interface CartContentProps {
+  inviteId: string;
   dishes: DishRenderItem[];
-  cart: CartAtom;
   currentCart: DishInOrder[];
-  menu: {
-    dishTypes: DishType[];
-    id: string;
-    restaurantId: number;
+  prices: {
+    [key: string]: Price;
   };
 }
 
-const CartContent = ({ dishes, cart, currentCart, menu }: CartContentProps) => {
-  const handleConfirmOrder = async () => {};
+const CartContent = ({
+  dishes,
+  currentCart,
+  prices,
+  inviteId,
+}: CartContentProps) => {
+  const [order, setOrder] = useAtom(orderAtom);
+
+  const submitNewOrder = async () => {
+    const rawSendOrderResponse = await fetch(
+      `${BACKEND_URL}/order/${inviteId}/submit`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ detail: currentCart }),
+      }
+    );
+    if (!rawSendOrderResponse.ok) {
+      const { message } = await rawSendOrderResponse.json();
+      await Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: message,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+    const SendOrderResponse = await rawSendOrderResponse.json();
+    await Swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: 'Send order successfully',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    setOrder({ ...order, isSubmitted: true, orderId: SendOrderResponse.id });
+  };
+
+  const updateNewOrder = async () => {
+    const rawSendOrderResponse = await fetch(
+      `${BACKEND_URL}/order/userOrder/${order.orderId}`,
+      {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ detail: currentCart, inviteId }),
+      }
+    );
+    if (!rawSendOrderResponse.ok) {
+      const { message } = await rawSendOrderResponse.json();
+      await Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: message,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+    const SendOrderResponse = await rawSendOrderResponse.json();
+    await Swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: 'Send order successfully',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    setOrder({ ...order, isSubmitted: true, orderId: SendOrderResponse.id });
+  };
+
+  const handleSendOrder = async () => {
+    if (!order.isSubmitted && !order.orderId) {
+      await submitNewOrder();
+      return;
+    }
+    await updateNewOrder();
+  };
 
   const totalPrice = currentCart.reduce((total, item) => {
-    const orderDishType = menu.dishTypes.find(
-      (dishType) => dishType.id === item.dishTypeId
-    );
-    if (!orderDishType) {
-      return total;
-    }
-    const dish = orderDishType.dishes.find((dish) => dish.id === item.dishId);
-    if (!dish) {
-      return total;
-    }
-    const price =
-      item.quantity *
-      (dish.discountPrice ? dish.discountPrice.value : dish.price.value);
-    return total + price;
+    return total + item.quantity * prices[item.dishId].value;
   }, 0);
 
   return (
@@ -43,11 +112,10 @@ const CartContent = ({ dishes, cart, currentCart, menu }: CartContentProps) => {
         if (!isDish) {
           return acc;
         }
-        const order = cart[dish.orderId];
-        if (!order) {
+        if (!currentCart) {
           return acc;
         }
-        const targetDish = order.find((item) => item.dishId === dish.id);
+        const targetDish = currentCart.find((item) => item.dishId === dish.id);
         if (!targetDish || targetDish.quantity === 0) {
           return acc;
         }
@@ -60,7 +128,7 @@ const CartContent = ({ dishes, cart, currentCart, menu }: CartContentProps) => {
         );
       }, [])}
       <Text>{totalPrice}</Text>
-      <Button auto flat onClick={handleConfirmOrder} css={{ m: 'auto' }}>
+      <Button auto flat onClick={handleSendOrder} css={{ m: 'auto' }}>
         Confirm
       </Button>
     </div>

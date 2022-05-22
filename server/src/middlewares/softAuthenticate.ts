@@ -14,9 +14,8 @@ export default async (
 ) => {
   const { token } = req.cookies;
   if (!token) {
-    return res
-      .status(401)
-      .json({ message: "You must be logged in before accessing this" });
+    next();
+    return;
   }
   try {
     const phoneNumber = verifyToken(token);
@@ -30,7 +29,8 @@ export default async (
     if (!userString) {
       user = await getUser(phoneNumber);
       if (!user) {
-        throw new Error("User not found");
+        next();
+        return;
       }
       logger.log("info", `Caching user ${phoneNumber} to Redis`);
       await redisClient.set(

@@ -21,7 +21,7 @@ export const loginControler = async (req: IAuthenticatedRequest, res: Response) 
     }
     const { pin, ...userInfo } = user;
     const token = generateToken(loginInfo.phoneNumber);
-    return res.status(200).cookie('token', token, { maxAge: 24 * 60 * 60 * 1000, secure: true, httpOnly: true, path: '/' }).json({ token, user: userInfo });
+    return res.status(200).cookie('token', token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, path: '/' }).json({ token, user: userInfo });
   } catch (err) {
     logger.log('error', `Failed at creating user: ${err}`);
     return res.status(500).json({ message: err.message });
