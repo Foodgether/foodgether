@@ -88,7 +88,7 @@ const Menu = () => {
     const createInvitationResponse =
       (await createRawResponse.json()) as GetInviteResult;
     copyToClipboard(
-      `${window.location.origin}${BASE_PATH}/invite/${createInvitationResponse.inviteId}`
+      `${window.location.origin}${BASE_PATH}/invite/${createInvitationResponse.order.inviteId}`
     );
     await Swal.fire({
       position: 'center',
@@ -97,7 +97,7 @@ const Menu = () => {
       showConfirmButton: false,
       timer: 1500,
     });
-    navigate(`${BASE_PATH}/invite/${createInvitationResponse.inviteId}`, {
+    navigate(`${BASE_PATH}/invite/${createInvitationResponse.order.inviteId}`, {
       state: { ...createInvitationResponse },
     });
   };
