@@ -5,3 +5,8 @@ export interface IAuthenticatedRequest extends Request {
   phoneNumber: string;
   user: User;
 }
+
+export interface ISoftAuthenticatedRequest extends Request {
+  phoneNumber?: string;
+  user?: User;
+}

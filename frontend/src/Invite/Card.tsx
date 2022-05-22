@@ -7,7 +7,7 @@ import {
   Text,
 } from '@nextui-org/react';
 import { useAtom } from 'jotai';
-import { cartAtom } from '../atoms';
+import { cartAtom, orderAtom } from '../atoms';
 import Swal from 'sweetalert2';
 
 interface CardMenuProps {
@@ -34,6 +34,8 @@ type Photo = {
 
 const Card = (props: CardMenuProps) => {
   const [currentCart, setCart] = useAtom(cartAtom);
+  const [order, setOrder] = useAtom(orderAtom);
+
   let quantity = 0;
 
   if (currentCart) {
@@ -54,6 +56,7 @@ const Card = (props: CardMenuProps) => {
     handleOrder(quantity - 1);
   };
   const handleOrder = async (quantity: number) => {
+    setOrder({ ...order, isSubmitted: false });
     if (!props.isLoggedIn) {
       await Swal.fire({
         position: 'center',

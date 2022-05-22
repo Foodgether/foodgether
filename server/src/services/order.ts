@@ -1,4 +1,4 @@
-import { Order, OrderDetail, OrderMenu, OrderRestaurant, OrderStatus } from "@prisma/client";
+import { Order, OrderDetail, OrderMenu, OrderRestaurant, OrderStatus, User, UserOrder } from "@prisma/client";
 import { getPrismaClient } from "../prisma";
 import { getRedisClient } from "../redis";
 
@@ -80,7 +80,11 @@ export const confirmOrder = async (inviteId: string) => {
     include: {
       orders: {
         include: {
-          user: true
+          user: {
+            select: {
+              pin: false
+            }
+          }
         }
       }
     }
@@ -99,3 +103,32 @@ export const canOrderBeConfirmed = async (inviteId: string) => {
   })
   return orderStatus.status === OrderStatus.INPROGRESS;
 }
+
+type ConfirmedOrder = Order & {
+  orders: (UserOrder & {
+      user: {};
+  })[]}
+
+export const calculateFinalOrder = (confirmedOrder: ConfirmedOrder) => confirmedOrder.orders.reduce(
+  (finalOrder, order) => {
+    order.detail.forEach(item => {
+      if (finalOrder[item.dishId]) {
+        finalOrder[item.dishId] += item.quantity;
+        return;
+      }
+      finalOrder[item.dishId] = item.quantity;
+    })
+    return finalOrder;
+  }, {})
+
+  export const updateUserOrder = (userOrderId: string, detail: OrderDetail[]) => {
+    const prisma = getPrismaClient();
+    return prisma.userOrder.update({
+      where: {
+        id: userOrderId
+      },
+      data: {
+        detail
+      }
+    })
+  }

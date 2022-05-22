@@ -59,11 +59,46 @@ const CartContent = ({
     setOrder({ ...order, isSubmitted: true, orderId: SendOrderResponse.id });
   };
 
+  const updateNewOrder = async () => {
+    const rawSendOrderResponse = await fetch(
+      `${BACKEND_URL}/order/userOrder/${order.orderId}`,
+      {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ detail: currentCart, inviteId }),
+      }
+    );
+    if (!rawSendOrderResponse.ok) {
+      const { message } = await rawSendOrderResponse.json();
+      await Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: message,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+    const SendOrderResponse = await rawSendOrderResponse.json();
+    await Swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: 'Send order successfully',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    setOrder({ ...order, isSubmitted: true, orderId: SendOrderResponse.id });
+  };
+
   const handleSendOrder = async () => {
     if (!order.isSubmitted && !order.orderId) {
       await submitNewOrder();
       return;
     }
+    await updateNewOrder();
   };
 
   const totalPrice = currentCart.reduce((total, item) => {

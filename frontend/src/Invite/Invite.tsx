@@ -4,7 +4,7 @@ import { Dish, DishType } from '../interfaces/menu';
 import { GetInviteResult } from '../interfaces/request';
 import { Container, FormElement, Spacer } from '@nextui-org/react';
 import { useAtom } from 'jotai';
-import { cartAtom, userAtom } from '../atoms';
+import { cartAtom, orderAtom, userAtom } from '../atoms';
 import { BACKEND_URL, BASE_PATH } from '../config';
 import Swal from 'sweetalert2';
 import Loader from '../components/Loader';
@@ -33,10 +33,11 @@ const Invite = () => {
     return <></>;
   }
 
-  const [currentCart, _] = useAtom(cartAtom);
+  const [currentCart, setCart] = useAtom(cartAtom);
   const [filterText, setFilterText] = useState('');
   const [inviteInfo, setInviteInfo] = useState<GetInviteResult>();
   const [user, __] = useAtom(userAtom);
+  const [order, setOrder] = useAtom(orderAtom);
 
   useEffect(() => {
     const pushedInviteInfo = location.state as GetInviteResult;
@@ -64,9 +65,20 @@ const Invite = () => {
         })
         .then((inviteInfoResult) => {
           setInviteInfo(inviteInfoResult);
+          setOrder({
+            isSubmitted: true,
+            orderId: inviteInfoResult.myOrder.id,
+          });
+          setCart(inviteInfoResult.myOrder.detail);
         });
     } else {
-      setInviteInfo(location.state as GetInviteResult);
+      const getInviteResult = location.state as GetInviteResult;
+      setInviteInfo(getInviteResult);
+      setOrder({
+        isSubmitted: true,
+        orderId: getInviteResult.myOrder.id,
+      });
+      setCart(getInviteResult.myOrder.detail);
     }
   }, []);
 
@@ -77,7 +89,7 @@ const Invite = () => {
   if (!inviteInfo || user.fetching) {
     return <Loader isShowingLoader={!inviteInfo} loadingMessage="" />;
   }
-  const { menu, restaurant } = inviteInfo;
+  const { menu, restaurant } = inviteInfo.order;
 
   const dishes = menu.dishTypes.reduce((acc: DishRenderItem[], dishType) => {
     const processedDishes = dishType.dishes.reduce(
@@ -87,7 +99,7 @@ const Invite = () => {
           return acc.concat({
             ...dish,
             dishTypeId: dishType.id,
-            orderId: inviteInfo.inviteId,
+            orderId: inviteInfo.order.inviteId,
           });
         }
         return acc;
@@ -111,11 +123,14 @@ const Invite = () => {
       }, {})
     );
   }, {});
+
+  console.log(order.isSubmitted);
+
   return (
     <Container>
       <RestaurantInfo {...restaurant} />
       <Spacer y={1} />
-      {'id' in user && user.id === inviteInfo.createdUserId ? (
+      {'id' in user && user.id === inviteInfo.order.createdUserId ? (
         <Tabs defaultIndex={InviteTab.MENU}>
           <TabList>
             <Tab className="react-tabs__tab text-xl font-bold text-pink-900">
@@ -136,7 +151,7 @@ const Invite = () => {
             />
           </TabPanel>
           <TabPanel>
-            <OrderInfo inviteId={inviteInfo.inviteId} />
+            <OrderInfo inviteId={inviteInfo.order.inviteId} />
           </TabPanel>
         </Tabs>
       ) : (

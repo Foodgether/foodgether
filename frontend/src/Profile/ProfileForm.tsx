@@ -10,8 +10,8 @@ import { Button, Container, Spacer } from '@nextui-org/react';
 let formikRef: FormikProps<AuthFormRegisterValues> | null;
 
 const ProfileForm = () => {
-  const [user, setUser] = useAtom(userAtom);
-  const [isShowingSpinner, setShowingSpinner] = useState(false);
+  const [user, _] = useAtom(userAtom);
+  const [isShowingSpinner, __] = useState(false);
   const isAuthenticated = 'id' in user;
   if (!isAuthenticated) {
     return <></>;

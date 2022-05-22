@@ -7,9 +7,14 @@ export interface GetMenuResult {
   restaurant: Restaurant;
 }
 
-export interface GetInviteResult extends GetMenuResult {
+export interface Order extends GetMenuResult {
   id: string;
   createdUserId: string;
   inviteId: string;
   status: OrderStatus;
+}
+
+export interface GetInviteResult {
+  order: Order;
+  myOrder: any;
 }

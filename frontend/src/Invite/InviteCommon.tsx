@@ -15,7 +15,7 @@ import { Virtuoso } from 'react-virtuoso';
 import SearchIcon from '../components/SearchIcon';
 import CartContent from './CartContent';
 import DishFilter from '../components/DishFilter';
-import { DishInOrder, userAtom } from '../atoms';
+import { DishInOrder, orderAtom, userAtom } from '../atoms';
 import { DishRenderItem } from './Invite';
 import { useAtom } from 'jotai';
 import { OrderStatus } from '../enums';
@@ -39,6 +39,7 @@ const InviteCommon = ({
 }: InviteCommonProps) => {
   const [user, _] = useAtom(userAtom);
   const isLoggedIn = !user.fetching && user.loggedIn;
+  const [order, __] = useAtom(orderAtom);
 
   return (
     <Container
@@ -54,7 +55,7 @@ const InviteCommon = ({
         <Grid xs justify="flex-end"></Grid>
       </Grid.Container>
 
-      {inviteInfo.menu.dishTypes.length > 0 && (
+      {inviteInfo.order.menu.dishTypes.length > 0 && (
         <Virtuoso
           useWindowScroll
           style={{ height: '100%' }}
@@ -80,7 +81,7 @@ const InviteCommon = ({
                   {...dish}
                   price={dish.discountPrice ? dish.discountPrice : dish.price}
                   isLoggedIn={isLoggedIn}
-                  canEdit={inviteInfo.status === OrderStatus.INPROGRESS}
+                  canEdit={inviteInfo.order.status === OrderStatus.INPROGRESS}
                 />
                 <Spacer y={1} key={`spacer-${dish.id}`} />
               </>
@@ -88,7 +89,7 @@ const InviteCommon = ({
           }}
         />
       )}
-      {currentCart && currentCart.length !== 0 && (
+      {currentCart && currentCart.length !== 0 && !order.isSubmitted && (
         <div style={{ position: 'fixed', right: '3em', bottom: '3em' }}>
           <Popover placement="top">
             <Popover.Trigger>
@@ -101,7 +102,7 @@ const InviteCommon = ({
                 prices={prices}
                 dishes={dishes}
                 currentCart={currentCart}
-                inviteId={inviteInfo.inviteId}
+                inviteId={inviteInfo.order.inviteId}
               />
             </Popover.Content>
           </Popover>

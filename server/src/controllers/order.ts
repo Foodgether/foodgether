@@ -1,14 +1,16 @@
-import { IAuthenticatedRequest } from "../middlewares/interface/authenticate";
+import { IAuthenticatedRequest, ISoftAuthenticatedRequest } from "../middlewares/interface/authenticate";
 import { Response } from "express";
 import {
   ConfirmOrderSchema,
   CreateInviteSchema,
   CreateOrderSchema,
   GetInviteSchema,
+  UpdateOrderSchema,
 } from "./validators/order";
 import { nanoid } from "nanoid/async";
 import {
   cacheOrder,
+  calculateFinalOrder,
   canOrderBeConfirmed,
   confirmOrder,
   createOrder,
@@ -16,9 +18,12 @@ import {
   doesInviteIdExist,
   getCachedOrder,
   getInviteOrder,
+  updateUserOrder,
 } from "../services/order";
 import { getRestaurantInfo } from "../services/restaurant";
 import logger from "../utils/logger";
+import { getUserOrderByOrderId } from "../services/userOrder";
+import { GetInviteResponse } from "./interface/order";
 
 export const createInviteController = async (
   req: IAuthenticatedRequest,
@@ -54,24 +59,31 @@ export const createInviteController = async (
 };
 
 export const getInviteController = async (
-  req: IAuthenticatedRequest,
+  req: ISoftAuthenticatedRequest,
   res: Response
 ) => {
   try {
     const { inviteId } = await GetInviteSchema.validate(req.params);
-    let inviteOrder = await getCachedOrder(inviteId);
+    let inviteOrder:GetInviteResponse = {}
+    inviteOrder.order = await getCachedOrder(inviteId);
     if (!inviteOrder) {
       logger.log(
         "info",
         `Getting order invite from database for id: ${inviteId}`
       );
-      inviteOrder = await getInviteOrder(inviteId);
+      inviteOrder.order = await getInviteOrder(inviteId);
       logger.log("info", `Caching for id: ${inviteId}`);
-      await cacheOrder(inviteId, inviteOrder);
-
+      await cacheOrder(inviteId, inviteOrder.order);
       if (!inviteOrder) {
         return res.status(400).json({ message: "Invite not found" });
       }
+    }
+    if (!req.user) {
+      return res.status(200).json(inviteOrder);
+    }
+    const userOrder = await getUserOrderByOrderId(inviteOrder.order.id, req.user.id);
+    if (userOrder) {
+      inviteOrder.myOrder = userOrder;
     }
     return res.status(200).json(inviteOrder);
   } catch (err) {
@@ -130,6 +142,56 @@ export const createOrderController = async (
     return res.status(500).json({ message: err.message });
   }
 };
+
+export const updateOrderController = async (
+  req: IAuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const { userOrderId, detail, inviteId } = await UpdateOrderSchema.validate({
+      ...req.params,
+      ...req.body,
+    });
+    let inviteOrder = await getCachedOrder(inviteId);
+    if (!inviteOrder) {
+      logger.log(
+        "info",
+        `Getting order invite from database for id: ${inviteId}`
+      );
+      inviteOrder = await getInviteOrder(inviteId);
+      logger.log("info", `Caching for id: ${inviteId}`);
+      await cacheOrder(inviteId, inviteOrder);
+      if (!inviteOrder) {
+        return res.status(400).json({ message: "Invite not found" });
+      }
+    }
+    const dishTypes = inviteOrder.menu.dishTypes;
+    try {
+      detail.forEach((item) => {
+        const dishTypeIndex = dishTypes.findIndex(
+          (dishType) => dishType.id === item.dishTypeId
+        );
+        if (dishTypeIndex === -1) {
+          throw new Error("Invalid dish type");
+        }
+        if (
+          dishTypes[dishTypeIndex].dishes.findIndex(
+            (dish) => dish.id === item.dishId
+          ) === -1
+        ) {
+          throw new Error("Invalid dish");
+        }
+      });
+    } catch (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    const newUserOrder = await updateUserOrder(userOrderId, detail);
+    return res.status(200).json(newUserOrder);
+  } catch (err) {
+    logger.log("error", `Failed at getting menu: ${err}\n${err.stack}`);
+    return res.status(500).json({ message: err.message });
+  }
+};
   
 export const confirmOrderController = async (req: IAuthenticatedRequest, res: Response) => {
   try {
@@ -139,7 +201,8 @@ export const confirmOrderController = async (req: IAuthenticatedRequest, res: Re
       throw new Error("Order can't be confirmed");
     }
     const confirmedOrder = await confirmOrder(inviteId);
-    return res.status(200).json(confirmedOrder);
+    const finalOrder = calculateFinalOrder(confirmedOrder);
+    return res.status(200).json({...confirmedOrder, finalOrder});
   } catch (err) {
     logger.log("error", `Failed at getting menu: ${err}\n${err.stack}`);
     return res.status(500).json({ message: err.message });
