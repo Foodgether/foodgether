@@ -13,7 +13,7 @@ import {
   Spacer,
   Text,
 } from '@nextui-org/react';
-import { GetMenuResult } from '../Menu/interface';
+import { GetMenuResult } from '../interfaces/request';
 import { useAtom } from 'jotai';
 import { currentStateAtom } from '../atoms';
 

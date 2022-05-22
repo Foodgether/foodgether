@@ -1,4 +1,4 @@
-import { Order, OrderDetail, OrderMenu, OrderRestaurant } from "@prisma/client";
+import { Order, OrderDetail, OrderMenu, OrderRestaurant, OrderStatus } from "@prisma/client";
 import { getPrismaClient } from "../prisma";
 import { getRedisClient } from "../redis";
 
@@ -66,4 +66,36 @@ export const createUserOrder = async (orderId: string, userId: string, detail: O
       detail
     }
   })
+}
+
+export const confirmOrder = async (inviteId: string) => {
+  const prisma = getPrismaClient();
+  return prisma.order.update({
+    where: {
+      inviteId
+    },
+    data: {
+      status: OrderStatus.CONFIRMED
+    },
+    include: {
+      orders: {
+        include: {
+          user: true
+        }
+      }
+    }
+  })
+}
+
+export const canOrderBeConfirmed = async (inviteId: string) => {
+  const prisma = getPrismaClient();
+  const orderStatus = await prisma.order.findUnique({
+    where: {
+      inviteId
+    },
+    select: {
+      status: true
+    }
+  })
+  return orderStatus.status === OrderStatus.INPROGRESS;
 }

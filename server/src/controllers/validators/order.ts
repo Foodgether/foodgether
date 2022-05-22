@@ -16,3 +16,7 @@ export const CreateOrderSchema = yup.object({
     quantity: yup.number().min(1).required(),
   })).min(1).required()
 }).required();
+
+export const ConfirmOrderSchema = yup.object({
+  inviteId: yup.string().min(10).max(10).required()
+}).required();

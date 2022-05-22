@@ -1,7 +1,7 @@
-import React from "react";
-import Card from "./Card";
-import { Price } from "../interfaces/menu";
-import { GetInviteResult } from "../interfaces/request";
+import React from 'react';
+import Card from './Card';
+import { Price } from '../interfaces/menu';
+import { GetInviteResult } from '../interfaces/request';
 import {
   Button,
   Container,
@@ -10,15 +10,15 @@ import {
   Popover,
   Spacer,
   Text,
-} from "@nextui-org/react";
-import { Virtuoso } from "react-virtuoso";
-import SearchIcon from "../components/SearchIcon";
-import CartContent from "./CartContent";
-import DishFilter from "../components/DishFilter";
-import { Restaurant } from "../interfaces/restaurant";
-import { CartAtom, DishInOrder, userAtom } from "../atoms";
-import { DishRenderItem } from "./Invite";
-import { useAtom } from "jotai";
+} from '@nextui-org/react';
+import { Virtuoso } from 'react-virtuoso';
+import SearchIcon from '../components/SearchIcon';
+import CartContent from './CartContent';
+import DishFilter from '../components/DishFilter';
+import { CartAtom, DishInOrder, userAtom } from '../atoms';
+import { DishRenderItem } from './Invite';
+import { useAtom } from 'jotai';
+import { OrderStatus } from '../enums';
 
 interface InviteCommonProps {
   inviteInfo: GetInviteResult;
@@ -47,7 +47,7 @@ const InviteCommon = ({
       fluid
       justify="center"
       alignItems="center"
-      css={{ height: "800px", mt: "$16" }}
+      css={{ height: '800px', mt: '$16' }}
     >
       <Grid.Container>
         <Grid xs justify="flex-start">
@@ -59,11 +59,11 @@ const InviteCommon = ({
       {inviteInfo.menu.dishTypes.length > 0 && (
         <Virtuoso
           useWindowScroll
-          style={{ height: "100%" }}
+          style={{ height: '100%' }}
           data={dishes}
           overscan={400}
           itemContent={(index, dish) => {
-            const isDish = "price" in dish;
+            const isDish = 'price' in dish;
             if (!isDish) {
               return (
                 <>
@@ -82,6 +82,7 @@ const InviteCommon = ({
                   {...dish}
                   price={dish.discountPrice ? dish.discountPrice : dish.price}
                   isLoggedIn={isLoggedIn}
+                  canEdit={inviteInfo.status === OrderStatus.INPROGRESS}
                 />
                 <Spacer y={1} key={`spacer-${dish.id}`} />
               </>
@@ -90,7 +91,7 @@ const InviteCommon = ({
         />
       )}
       {currentCart && currentCart.length !== 0 && (
-        <div style={{ position: "fixed", right: "3em", bottom: "3em" }}>
+        <div style={{ position: 'fixed', right: '3em', bottom: '3em' }}>
           <Popover placement="top">
             <Popover.Trigger>
               <Button auto flat>
@@ -103,6 +104,7 @@ const InviteCommon = ({
                 dishes={dishes}
                 cart={cart}
                 currentCart={currentCart}
+                inviteId={inviteInfo.inviteId}
               />
             </Popover.Content>
           </Popover>

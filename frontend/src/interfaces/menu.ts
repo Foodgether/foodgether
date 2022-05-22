@@ -1,4 +1,4 @@
-import { Photo } from "./shared";
+import { Photo } from './shared';
 
 export interface Menu {
   dishTypes: DishType[];

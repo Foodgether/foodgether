@@ -1,6 +1,7 @@
 import { IAuthenticatedRequest } from "../middlewares/interface/authenticate";
 import { Response } from "express";
 import {
+  ConfirmOrderSchema,
   CreateInviteSchema,
   CreateOrderSchema,
   GetInviteSchema,
@@ -8,6 +9,8 @@ import {
 import { nanoid } from "nanoid/async";
 import {
   cacheOrder,
+  canOrderBeConfirmed,
+  confirmOrder,
   createOrder,
   createUserOrder,
   doesInviteIdExist,
@@ -127,3 +130,18 @@ export const createOrderController = async (
     return res.status(500).json({ message: err.message });
   }
 };
+  
+export const confirmOrderController = async (req: IAuthenticatedRequest, res: Response) => {
+  try {
+    const {inviteId} = await ConfirmOrderSchema.validate(req.params);
+    const canConfirm = await canOrderBeConfirmed(inviteId);
+    if (!canConfirm) {
+      throw new Error("Order can't be confirmed");
+    }
+    const confirmedOrder = await confirmOrder(inviteId);
+    return res.status(200).json(confirmedOrder);
+  } catch (err) {
+    logger.log("error", `Failed at getting menu: ${err}\n${err.stack}`);
+    return res.status(500).json({ message: err.message });
+  }
+}
