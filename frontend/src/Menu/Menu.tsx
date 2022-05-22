@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import Card from './Card';
 import { Dish, DishType } from '../interfaces/menu';
-import { GetMenuResult, GetInviteResult } from '../interfaces/request';
+import {
+  GetMenuResult,
+  GetInviteResult,
+  Invitation,
+} from '../interfaces/request';
 import {
   Button,
   Container,
@@ -86,9 +90,10 @@ const Menu = () => {
       return;
     }
     const createInvitationResponse =
-      (await createRawResponse.json()) as GetInviteResult;
+      (await createRawResponse.json()) as Invitation;
+    console.log(createInvitationResponse);
     copyToClipboard(
-      `${window.location.origin}${BASE_PATH}/invite/${createInvitationResponse.order.inviteId}`
+      `${window.location.origin}${BASE_PATH}/invite/${createInvitationResponse.inviteId}`
     );
     await Swal.fire({
       position: 'center',
@@ -97,7 +102,7 @@ const Menu = () => {
       showConfirmButton: false,
       timer: 1500,
     });
-    navigate(`${BASE_PATH}/invite/${createInvitationResponse.order.inviteId}`, {
+    navigate(`${BASE_PATH}/invite/${createInvitationResponse.inviteId}`, {
       state: { ...createInvitationResponse },
     });
   };

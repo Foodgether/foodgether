@@ -7,7 +7,7 @@ export interface GetMenuResult {
   restaurant: Restaurant;
 }
 
-export interface Order extends GetMenuResult {
+export interface Invitation extends GetMenuResult {
   id: string;
   createdUserId: string;
   inviteId: string;
@@ -15,6 +15,6 @@ export interface Order extends GetMenuResult {
 }
 
 export interface GetInviteResult {
-  order: Order;
+  order: Invitation;
   myOrder: any;
 }

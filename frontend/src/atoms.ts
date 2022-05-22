@@ -11,10 +11,11 @@ export const currentStateAtom = atom<CurrentStateAtom>({
   currentRestaurant: 0,
 });
 
-export const orderAtom = atom<OrderAtom>({
+export const initialOrderAtomValue = {
   isSubmitted: false,
   orderId: '',
-});
+};
+export const orderAtom = atom<OrderAtom>(initialOrderAtomValue);
 
 type TokenAtom = string;
 

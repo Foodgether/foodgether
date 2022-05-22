@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Dish, DishType } from '../interfaces/menu';
-import { GetInviteResult } from '../interfaces/request';
+import { GetInviteResult, Invitation } from '../interfaces/request';
 import { Container, FormElement, Spacer } from '@nextui-org/react';
 import { useAtom } from 'jotai';
 import { cartAtom, orderAtom, userAtom } from '../atoms';
@@ -39,8 +39,8 @@ const Invite = () => {
   const [user, __] = useAtom(userAtom);
   const [order, setOrder] = useAtom(orderAtom);
 
-  useEffect(() => {
-    const pushedInviteInfo = location.state as GetInviteResult;
+  const handleGetInviteInfo = async () => {
+    const pushedInviteInfo = location.state as Invitation;
     if (!pushedInviteInfo) {
       fetch(`${BACKEND_URL}/order/invite/${inviteId}`, {
         method: 'GET',
@@ -72,15 +72,22 @@ const Invite = () => {
           setCart(inviteInfoResult.myOrder.detail);
         });
     } else {
-      const getInviteResult = location.state as GetInviteResult;
-      setInviteInfo(getInviteResult);
+      const getInviteResult = location.state as Invitation;
+      setInviteInfo({ order: getInviteResult, myOrder: null });
       setOrder({
         isSubmitted: true,
-        orderId: getInviteResult.myOrder.id,
+        orderId: '',
       });
-      setCart(getInviteResult.myOrder.detail);
     }
+  };
+  useEffect(() => {
+    handleGetInviteInfo();
   }, []);
+
+  useEffect(() => {
+    console.log('SHOULD RERENDER');
+    handleGetInviteInfo;
+  }, [user]);
 
   const handleChangeFilterText = (e: React.ChangeEvent<FormElement>) => {
     setFilterText(e.target.value);
@@ -123,8 +130,6 @@ const Invite = () => {
       }, {})
     );
   }, {});
-
-  console.log(order.isSubmitted);
 
   return (
     <Container>
