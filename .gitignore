@@ -92,3 +92,7 @@ typings/
 dist/
 
 .DS_Store
+
+realtime/pb/
+realtime/realtime
+realtime/realtime.exe
