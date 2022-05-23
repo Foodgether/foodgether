@@ -6,6 +6,12 @@ pipeline {
         sh 'bash ./scripts/node.sh'
         sh 'bash ./scripts/chromium.sh'
         sh 'bash ./scripts/docker.sh'
+        sh 'bash ./scripts/golang.sh'
+      }
+    }
+    stage('Building Protobuf') {
+      steps {
+        sh 'bash ./scripts/protobuf.sh'
       }
     }
     stage('Building frontend') {
@@ -16,6 +22,11 @@ pipeline {
     stage('Building backend') {
       steps {
         sh 'bash ./scripts/backend.sh'
+      }
+    }
+    stage('Building realtime') {
+      steps {
+        sh 'bash ./scripts/realtime.sh'
       }
     }
     stage('Stopping docker containers') {
@@ -40,6 +51,14 @@ pipeline {
       }
       steps {
         sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/backend.sh'
+      }
+    }
+    stage('Building realtime image') {
+      when {
+        branch 'main'
+      }
+      steps {
+        sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/realtime.sh'
       }
     }
     stage('Deployyyyyy') {

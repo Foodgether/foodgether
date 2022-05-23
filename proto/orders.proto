@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "/pb";
+
+message UserOrder {
+  string id = 1;
+  User user = 2;
+  string userId = 3;
+  Order order = 4;
+  string orderId = 5;
+  repeated OrderDetail detail = 6;
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  string phoneNumber = 3;
+  string pin = 4;
+  repeated UserOrder orders = 5;
+  repeated Order createdOrders = 6;
+  google.protobuf.Timestamp createdAt = 7;
+  google.protobuf.Timestamp updatedAt = 8;
+}
+
+message Order {
+  string id = 1;
+  string inviteId = 2;
+  int32 restaurantId = 3;
+  Restaurant restaurant = 4;
+  Menu menu = 5;
+  repeated UserOrder orders = 6;
+  string status = 7;
+  User createdBy = 8;
+  string createdUserId = 9;
+}
+
+message OrderDetail {
+  int32 dishId = 1;
+  int32 dishTypeId = 2;
+  int32 quantity = 3;
+}
+
+message Restaurant {
+
+}
+
+message Menu {
+
+}
+
+service OrderStream {
+  rpc FetchOrder (FetchOrderRequest) returns (stream FetchOrderResponse) {}
+}
+
+message FetchOrderRequest {
+  string token = 1;
+  string orderId = 2;
+}
+
+message FetchOrderResponse {
+  UserOrder userOrder = 1;
+}
