@@ -1,13 +1,17 @@
-import { getPrismaClient } from "../prisma"
+import { getPrismaClient } from "../prisma";
 import { Menu } from "../scraper/menu/shopeeMenuIdentifier";
 
-export const upsertMenu = (menu: Menu[], restaurantId: string, menuId?: string) => {
+export const upsertMenu = (
+  menu: Menu[],
+  restaurantId: string,
+  menuId?: string
+) => {
   const prisma = getPrismaClient();
-  const dishTypes = menu.map(dishType => {
+  const dishTypes = menu.map((dishType) => {
     return {
       id: dishType.dish_type_id,
       name: dishType.dish_type_name,
-      dishes: dishType.dishes.map(dish => {
+      dishes: dishType.dishes.map((dish) => {
         return {
           id: dish.id,
           name: dish.name,
@@ -16,37 +20,39 @@ export const upsertMenu = (menu: Menu[], restaurantId: string, menuId?: string) 
           discountPrice: dish.discount_price,
           isAvailable: dish.is_available,
           isActive: dish.is_active,
-          photos: dish.photos
-        }
-      })
-    }
-  })
+          photos: dish.photos,
+        };
+      }),
+    };
+  });
   if (menuId) {
     return prisma.menu.update({
       where: {
-        id: menuId
+        id: menuId,
       },
-      data: {dishTypes}
-    })
+      data: { dishTypes, updatedAt: new Date() },
+    });
   }
   return prisma.menu.create({
     data: {
       restaurant: {
         connect: {
-          id: restaurantId
-        }
+          id: restaurantId,
+        },
       },
-      dishTypes
-    }
-  })
-}
+      dishTypes,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+};
 
 export const doesMenuExist = async (restaurantId: string) => {
   const prisma = getPrismaClient();
   const menu = await prisma.menu.findUnique({
     where: {
-      restaurantId
-    }
-  })
-  return menu ? menu.id : null
-}
+      restaurantId,
+    },
+  });
+  return menu ? menu.id : null;
+};

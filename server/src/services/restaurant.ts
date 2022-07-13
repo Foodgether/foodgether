@@ -19,6 +19,8 @@ export const upsertRestaurant = async (restaurant: Restaurant) => {
     },
     isQualityMerchant: restaurant.is_quality_merchant,
     photos: restaurant.photos,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
   return prisma.restaurant.upsert({
     where: {

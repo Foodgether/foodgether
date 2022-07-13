@@ -1,12 +1,12 @@
-import React from 'react';
-import { Button, Text } from '@nextui-org/react';
-import { DishInOrder, orderAtom } from '../atoms';
-import CartItem from './CartItem';
-import { Price } from '../interfaces/menu';
-import { DishRenderItem } from './Invite';
-import { BACKEND_URL } from '../config';
-import Swal from 'sweetalert2';
-import { useAtom } from 'jotai';
+import React from "react";
+import { Button, Text } from "@nextui-org/react";
+import { DishInOrder, orderAtom } from "../atoms";
+import CartItem from "./CartItem";
+import { Price } from "../interfaces/menu";
+import { DishRenderItem } from "./Invite";
+import { BACKEND_URL } from "../config";
+import Swal from "sweetalert2";
+import { useAtom } from "jotai";
 
 interface CartContentProps {
   inviteId: string;
@@ -29,20 +29,20 @@ const CartContent = ({
     const rawSendOrderResponse = await fetch(
       `${BACKEND_URL}/order/${inviteId}/submit`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({ detail: currentCart }),
       }
     );
     if (!rawSendOrderResponse.ok) {
       const { message } = await rawSendOrderResponse.json();
       await Swal.fire({
-        position: 'center',
-        icon: 'error',
+        position: "center",
+        icon: "error",
         title: message,
         showConfirmButton: false,
         timer: 1500,
@@ -50,9 +50,9 @@ const CartContent = ({
     }
     const SendOrderResponse = await rawSendOrderResponse.json();
     await Swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: 'Send order successfully',
+      position: "center",
+      icon: "success",
+      title: "Send order successfully",
       showConfirmButton: false,
       timer: 1500,
     });
@@ -63,20 +63,20 @@ const CartContent = ({
     const rawSendOrderResponse = await fetch(
       `${BACKEND_URL}/order/userOrder/${order.orderId}`,
       {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({ detail: currentCart, inviteId }),
       }
     );
     if (!rawSendOrderResponse.ok) {
       const { message } = await rawSendOrderResponse.json();
       await Swal.fire({
-        position: 'center',
-        icon: 'error',
+        position: "center",
+        icon: "error",
         title: message,
         showConfirmButton: false,
         timer: 1500,
@@ -84,9 +84,9 @@ const CartContent = ({
     }
     const SendOrderResponse = await rawSendOrderResponse.json();
     await Swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: 'Send order successfully',
+      position: "center",
+      icon: "success",
+      title: "Send order successfully",
       showConfirmButton: false,
       timer: 1500,
     });
@@ -104,11 +104,13 @@ const CartContent = ({
   const totalPrice = currentCart.reduce((total, item) => {
     return total + item.quantity * prices[item.dishId].value;
   }, 0);
-
+  const uniqueDishes = [
+    ...new Map(dishes.map((item) => [item.id, item])).values(),
+  ];
   return (
-    <div style={{ width: '20em' }}>
-      {dishes.reduce((acc: any[], dish: DishRenderItem) => {
-        const isDish = 'price' in dish;
+    <div style={{ width: "20em" }}>
+      {uniqueDishes.reduce((acc: any[], dish: DishRenderItem) => {
+        const isDish = "price" in dish;
         if (!isDish) {
           return acc;
         }
@@ -128,7 +130,7 @@ const CartContent = ({
         );
       }, [])}
       <Text>{totalPrice}</Text>
-      <Button auto flat onClick={handleSendOrder} css={{ m: 'auto' }}>
+      <Button auto flat onClick={handleSendOrder} css={{ m: "auto" }}>
         Confirm
       </Button>
     </div>

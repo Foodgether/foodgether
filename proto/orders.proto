@@ -51,7 +51,9 @@ message Menu {
 }
 
 service OrderStream {
-  rpc FetchOrder (FetchOrderRequest) returns (stream FetchOrderResponse) {}
+  rpc FetchOrder (FetchOrderRequest) returns (stream FetchOrderResponse) {
+
+  }
 }
 
 message FetchOrderRequest {
@@ -60,5 +62,6 @@ message FetchOrderRequest {
 }
 
 message FetchOrderResponse {
-  UserOrder userOrder = 1;
+  string operationType = 1;
+  UserOrder userOrder = 2;
 }

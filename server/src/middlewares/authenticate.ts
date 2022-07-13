@@ -37,7 +37,7 @@ export default async (
         `user-${phoneNumber}`,
         JSON.stringify(user),
         "EX",
-        60 * 60
+        5 * 60
       );
     } else {
       logger.log("info", `Found user ${phoneNumber} in Redis`);

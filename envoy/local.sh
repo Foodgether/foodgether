@@ -1,0 +1,1 @@
+docker run -d --name envoy -p 4001:4001 -p 9901:9901 -p 10000:10000 -v ${pwd}/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy-dev:69bb7bc6888741b2bad0ea1eec37d00f677eb85f

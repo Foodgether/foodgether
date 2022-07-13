@@ -1,5 +1,5 @@
 diff --git a/node_modules/formik/dist/withFormik.d.ts b/node_modules/formik/dist/withFormik.d.ts
-index dcc9f52..d00d1d9 100644
+index f22625f..925afa2 100644
 --- a/node_modules/formik/dist/withFormik.d.ts
 +++ b/node_modules/formik/dist/withFormik.d.ts
 @@ -55,7 +55,7 @@ export interface WithFormikConfig<Props, Values extends FormikValues = FormikVal

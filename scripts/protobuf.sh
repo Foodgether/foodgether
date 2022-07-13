@@ -12,4 +12,5 @@ fi
 echo "Protoc Version Check Complete"
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-cd realtime && protoc -I=../proto --go_out=./ ../proto/orders.proto --go-grpc_out=./
+go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
+cd realtime && protoc -I=../proto --go_out=./ ../proto/orders.proto --go-grpc_out=./ --grpc-gateway_out=./

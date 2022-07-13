@@ -96,3 +96,9 @@ dist/
 realtime/pb/
 realtime/realtime
 realtime/realtime.exe
+
+realtime/tmp/
+
+frontend/src/pb/
+
+frontend/stats.html

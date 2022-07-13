@@ -14,20 +14,24 @@ pipeline {
         sh 'bash ./scripts/protobuf.sh'
       }
     }
-    stage('Building frontend') {
-      steps {
-        sh 'bash ./scripts/frontend.sh'
-      }
-    }
-    stage('Building backend') {
-      steps {
-        sh 'bash ./scripts/backend.sh'
-      }
-    }
-    stage('Building realtime') {
-      steps {
-        sh 'bash ./scripts/realtime.sh'
-      }
+    stage('Bulding all the stuff') {
+        parallel {
+          stage('Building frontend') {
+            steps {
+              sh 'bash ./scripts/frontend.sh'
+            }
+        }
+          stage('Building backend') {
+            steps {
+              sh 'bash ./scripts/backend.sh'
+            }
+          }
+          stage('Building realtime') {
+            steps {
+              sh 'bash ./scripts/realtime.sh'
+            }
+          }
+        }
     }
     stage('Stopping docker containers') {
       when {
@@ -37,35 +41,42 @@ pipeline {
         sh 'bash ./scripts/deploy/stop.sh'
       }
     }
-    stage('Building frontend image') {
-      when {
-        branch 'main'
-      }
-      steps {
-        sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/frontend.sh'
+
+    stage('Building Images') {
+      parallel {
+        stage('Building frontend image') {
+          when {
+            branch 'main'
+          }
+          steps {
+            sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/frontend.sh'
+          }
+        }
+        stage('Building backend image') {
+          when {
+            branch 'main'
+          }
+          steps {
+            sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/backend.sh'
+          }
+        }
+        stage('Building realtime image') {
+          when {
+            branch 'main'
+          }
+          steps {
+            sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/realtime.sh'
+          }
+        }
       }
     }
-    stage('Building backend image') {
-      when {
-        branch 'main'
-      }
-      steps {
-        sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/backend.sh'
-      }
-    }
-    stage('Building realtime image') {
-      when {
-        branch 'main'
-      }
-      steps {
-        sh 'export JENKINS_NODE_COOKIE=dontKillMe && bash ./scripts/deploy/realtime.sh'
-      }
-    }
+    
     stage('Deployyyyyy') {
       when {
         branch 'main'
       }
       steps {
+        sh 'sleep 5'
         sh 'docker-compose up -d'
       }
     }

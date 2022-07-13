@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { IAuthenticatedRequest } from '../middlewares/interface/authenticate';
+import { getRedisClient } from '../redis';
 import { compareHash, generateToken } from '../services/auth';
 import { getUser } from '../services/user';
 import logger from '../utils/logger';
@@ -19,6 +20,13 @@ export const loginControler = async (req: IAuthenticatedRequest, res: Response) 
     if (!verifyPinResult) {
       return res.status(401).json({ message: 'Wrong phone number or password' });
     }
+    const redisClient = getRedisClient();
+    await redisClient.set(
+      `user-${loginInfo.phoneNumber}`,
+      JSON.stringify(user),
+      "EX",
+      5 * 60
+    );
     const { pin, ...userInfo } = user;
     const token = generateToken(loginInfo.phoneNumber);
     return res.status(200).cookie('token', token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, path: '/' }).json({ token, user: userInfo });
