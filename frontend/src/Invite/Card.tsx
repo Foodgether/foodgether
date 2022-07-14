@@ -87,7 +87,7 @@ const Card = (props: CardMenuProps) => {
   };
 
   return (
-    <NextCard hoverable animated>
+    <NextCard isHoverable={true}>
       <NextCard.Body css={{ p: 0 }}>
         <Grid.Container justify="center">
           <Grid xs={12} md={2}>

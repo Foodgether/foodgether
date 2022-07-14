@@ -10,7 +10,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@nextui-org/react": "1.0.0-beta.7",
+    "@nextui-org/react": "^1.0.0-beta.9",
     "@protobuf-ts/grpcweb-transport": "^2.6.0",
     "@protobuf-ts/runtime": "^2.6.0",
     "formik": "^2.2.9",
