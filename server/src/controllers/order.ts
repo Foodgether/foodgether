@@ -72,7 +72,7 @@ export const getInviteController = async (
     const { inviteId } = await GetInviteSchema.validate(req.params);
     let inviteOrder: GetInviteResponse = {};
     inviteOrder.order = await getCachedOrder(inviteId);
-    if (!inviteOrder) {
+    if (!inviteOrder.order) {
       logger.log(
         "info",
         `Getting order invite from database for id: ${inviteId}`

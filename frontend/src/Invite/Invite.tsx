@@ -275,7 +275,7 @@ const Invite = () => {
             />
           </TabPanel>
           <TabPanel>
-            <Summary />
+            <Summary orderList={orderList} menu={keyedMenu} />
           </TabPanel>
         </Tabs>
       ) : (
