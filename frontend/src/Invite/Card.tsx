@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Button,
   Card as NextCard,
@@ -36,14 +36,15 @@ const Card = (props: CardMenuProps) => {
   const [currentCart, setCart] = useAtom(cartAtom);
   const [order, setOrder] = useAtom(orderAtom);
 
-  let quantity = 0;
-
-  if (currentCart) {
-    const dishIndex = currentCart.findIndex((item) => item.dishId === props.id);
-    if (dishIndex !== -1) {
-      quantity = currentCart[dishIndex].quantity;
+  const quantity = useMemo(() => {
+    if (currentCart) {
+      const dish = currentCart.find((item) => item.dishId === props.id);
+      if (dish) {
+        return dish.quantity;
+      }
     }
-  }
+    return 0;
+  }, [currentCart]);
 
   const { name, price, photos } = props;
   const photoLastIndex = photos.length - 2;
@@ -136,7 +137,7 @@ const Card = (props: CardMenuProps) => {
               </Button.Group>
             )}
 
-            {quantity === 0 && (
+            {quantity === 0 && props.canEdit && (
               <Button
                 onPress={handleIncrement}
                 color="gradient"

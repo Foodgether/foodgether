@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Button,
   Card as NextCard,
@@ -21,6 +21,7 @@ interface CardMenuProps {
   description?: string;
   dishTypeId: number;
   orderId: string;
+  canEdit: boolean;
 }
 
 type Photo = {
@@ -29,19 +30,27 @@ type Photo = {
   value: string;
 };
 
-const CartItem = (props: CardMenuProps) => {
+const CartItem = ({
+  id,
+  name,
+  price,
+  photos,
+  dishTypeId,
+  canEdit,
+}: CardMenuProps) => {
   const [currentCart, setCart] = useAtom(cartAtom);
   const [order, setOrder] = useAtom(orderAtom);
 
-  let quantity = 0;
-  if (currentCart) {
-    const dish = currentCart.find((item) => item.dishId === props.id);
-    if (dish) {
-      quantity = dish.quantity;
+  const quantity = useMemo(() => {
+    if (currentCart) {
+      const dish = currentCart.find((item) => item.dishId === id);
+      if (dish) {
+        return dish.quantity;
+      }
     }
-  }
+    return 0;
+  }, [currentCart]);
 
-  const { name, price, photos } = props;
   const photo = photos[0];
   const handleIncrement = () => {
     handleOrder(quantity + 1);
@@ -51,15 +60,13 @@ const CartItem = (props: CardMenuProps) => {
   };
   const handleOrder = (quantity: number) => {
     if (!currentCart) {
-      setCart([{ dishId: props.id, dishTypeId: props.dishTypeId, quantity }]);
+      setCart([{ dishId: id, dishTypeId: dishTypeId, quantity }]);
       return;
     }
-    const item = currentCart.find((item) => item.dishId === props.id);
+    const item = currentCart.find((item) => item.dishId === id);
     if (!item) {
       setCart(
-        currentCart.concat([
-          { dishId: props.id, dishTypeId: props.dishTypeId, quantity },
-        ])
+        currentCart.concat([{ dishId: id, dishTypeId: dishTypeId, quantity }])
       );
       return;
     }
@@ -89,29 +96,33 @@ const CartItem = (props: CardMenuProps) => {
             {quantity !== 0 && (
               <>
                 <Button.Group>
-                  <Button
-                    onClick={handleDecrement}
-                    color="gradient"
-                    auto
-                    ghost
-                    css={{ width: "1em", height: "2em" }}
-                    size="sm"
-                  >
-                    -
-                  </Button>
+                  {canEdit && (
+                    <Button
+                      onClick={handleDecrement}
+                      color="gradient"
+                      auto
+                      ghost
+                      css={{ width: "1em", height: "2em" }}
+                      size="sm"
+                    >
+                      -
+                    </Button>
+                  )}
                   <Text h6 css={{ color: "$red500", fontWeight: "$semibold" }}>
                     {quantity}
                   </Text>
-                  <Button
-                    onClick={handleIncrement}
-                    color="gradient"
-                    auto
-                    ghost
-                    css={{ width: "1em", height: "2em" }}
-                    size="sm"
-                  >
-                    +
-                  </Button>
+                  {canEdit && (
+                    <Button
+                      onClick={handleIncrement}
+                      color="gradient"
+                      auto
+                      ghost
+                      css={{ width: "1em", height: "2em" }}
+                      size="sm"
+                    >
+                      +
+                    </Button>
+                  )}
                 </Button.Group>
                 <Text margin="auto">Total: {quantity * price.value}</Text>
               </>

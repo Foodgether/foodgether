@@ -1,7 +1,7 @@
-import React from 'react';
-import Card from './Card';
-import { Price } from '../interfaces/menu';
-import { GetInviteResult } from '../interfaces/request';
+import React, { useMemo } from "react";
+import Card from "./Card";
+import { Price } from "../interfaces/menu";
+import { GetInviteResult } from "../interfaces/request";
 import {
   Button,
   Container,
@@ -10,15 +10,14 @@ import {
   Popover,
   Spacer,
   Text,
-} from '@nextui-org/react';
-import { Virtuoso } from 'react-virtuoso';
-import SearchIcon from '../components/SearchIcon';
-import CartContent from './CartContent';
-import DishFilter from '../components/DishFilter';
-import { DishInOrder, orderAtom, userAtom } from '../atoms';
-import { DishRenderItem } from './Invite';
-import { useAtom } from 'jotai';
-import { OrderStatus } from '../enums';
+} from "@nextui-org/react";
+import { Virtuoso } from "react-virtuoso";
+import SearchIcon from "../components/SearchIcon";
+import CartContent from "./CartContent";
+import DishFilter from "../components/DishFilter";
+import { DishInOrder, orderAtom, userAtom } from "../atoms";
+import { DishRenderItem } from "./Invite";
+import { useAtomValue } from "jotai";
 
 interface InviteCommonProps {
   inviteInfo: GetInviteResult;
@@ -28,6 +27,7 @@ interface InviteCommonProps {
     [key: string]: Price;
   };
   handleChangeFilterText: (e: React.ChangeEvent<FormElement>) => void;
+  canEdit: boolean;
 }
 
 const InviteCommon = ({
@@ -36,17 +36,18 @@ const InviteCommon = ({
   dishes,
   prices,
   handleChangeFilterText,
+  canEdit,
 }: InviteCommonProps) => {
-  const [user, _] = useAtom(userAtom);
-  const isLoggedIn = !user.fetching && user.loggedIn;
-  const [order, __] = useAtom(orderAtom);
+  const user = useAtomValue(userAtom);
+  const order = useAtomValue(orderAtom);
+  const isLoggedIn = useMemo(() => !user.fetching && user.loggedIn, [user]);
 
   return (
     <Container
       fluid
       justify="center"
       alignItems="center"
-      css={{ height: '800px', mt: '$16' }}
+      css={{ height: "800px", mt: "$16" }}
     >
       <Grid.Container>
         <Grid xs justify="flex-start">
@@ -58,11 +59,11 @@ const InviteCommon = ({
       {inviteInfo.order.menu.dishTypes.length > 0 && (
         <Virtuoso
           useWindowScroll
-          style={{ height: '100%' }}
+          style={{ height: "100%" }}
           data={dishes}
           overscan={400}
           itemContent={(index, dish) => {
-            const isDish = 'price' in dish;
+            const isDish = "price" in dish;
             if (!isDish) {
               return (
                 <>
@@ -81,7 +82,7 @@ const InviteCommon = ({
                   {...dish}
                   price={dish.discountPrice ? dish.discountPrice : dish.price}
                   isLoggedIn={isLoggedIn}
-                  canEdit={inviteInfo.order.status === OrderStatus.INPROGRESS}
+                  canEdit={canEdit}
                 />
                 <Spacer y={1} key={`spacer-${dish.id}`} />
               </>
@@ -90,7 +91,7 @@ const InviteCommon = ({
         />
       )}
       {currentCart && currentCart.length !== 0 && !order.isSubmitted && (
-        <div style={{ position: 'fixed', right: '3em', bottom: '3em' }}>
+        <div style={{ position: "fixed", right: "3em", bottom: "3em" }}>
           <Popover placement="top">
             <Popover.Trigger>
               <Button auto flat>
@@ -103,6 +104,7 @@ const InviteCommon = ({
                 dishes={dishes}
                 currentCart={currentCart}
                 inviteId={inviteInfo.order.inviteId}
+                canEdit={canEdit}
               />
             </Popover.Content>
           </Popover>

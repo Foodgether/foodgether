@@ -30,6 +30,7 @@ import {
   getUserOrderByOrderId,
 } from "../services/userOrder";
 import { GetInviteResponse } from "./interface/order";
+import { OrderStatus } from "@prisma/client";
 
 export const createInviteController = async (
   req: IAuthenticatedRequest,
@@ -225,7 +226,6 @@ export const getOrdersController = async (
       return res.status(401).json({ message: "Not allowed to get orders" });
     }
     const orders = await getOrdersOfInvitation(inviteOrder.id);
-    console.log(orders);
     return res.status(200).json(orders);
   } catch (err) {
     logger.log("error", `Failed at getting menu: ${err}\n${err.stack}`);
@@ -246,6 +246,12 @@ export const confirmOrderController = async (
     }
     const confirmedOrder = await confirmOrder(inviteId);
     const finalOrder = calculateFinalOrder(confirmedOrder);
+
+    const inviteOrder = await getCachedOrder(inviteId);
+    if (inviteOrder) {
+      inviteOrder.status = OrderStatus.CONFIRMED;
+      await cacheOrder(inviteId, inviteOrder);
+    }
     return res.status(200).json({ ...confirmedOrder, finalOrder });
   } catch (err) {
     logger.log("error", `Failed at getting menu: ${err}\n${err.stack}`);

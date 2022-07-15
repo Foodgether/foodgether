@@ -1,19 +1,21 @@
-import { atom } from 'jotai';
+import { atom } from "jotai";
+import { OrderStatus } from "./enums";
 
 export const userAtom = atom<UserAtom | UserAtomAuthenticated>({
   fetching: true,
   loggedIn: false,
 });
-export const tokenAtom = atom<TokenAtom>('');
+export const tokenAtom = atom<TokenAtom>("");
 export const cartAtom = atom<DishInOrder[]>([]);
 export const currentStateAtom = atom<CurrentStateAtom>({
-  currentMenu: '',
+  currentMenu: "",
   currentRestaurant: 0,
 });
 
 export const initialOrderAtomValue = {
   isSubmitted: false,
-  orderId: '',
+  orderId: "",
+  status: OrderStatus.INPROGRESS,
 };
 export const orderAtom = atom<OrderAtom>(initialOrderAtomValue);
 
@@ -49,4 +51,5 @@ interface CurrentStateAtom {
 export interface OrderAtom {
   isSubmitted: boolean;
   orderId: string;
+  status: OrderStatus;
 }

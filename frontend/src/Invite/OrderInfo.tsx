@@ -8,14 +8,25 @@ import OrderDetail from "./OrderInfo/OrderDetail";
 import { Dish } from "../interfaces/menu";
 import { Collapse } from "@nextui-org/react";
 import { Dictionary } from "lodash";
+import { OrderStatus } from "../enums";
+import { useAtom, useSetAtom } from "jotai";
+import { orderAtom } from "../atoms";
 
 interface OrderInfoProps {
   inviteId: string;
   orderList: FetchOrderResponse["userOrder"][];
   menu: Dictionary<Dish>;
+  orderStatus: OrderStatus;
 }
 
-const OrderInfo = ({ inviteId, orderList, menu }: OrderInfoProps) => {
+const OrderInfo = ({
+  inviteId,
+  orderList,
+  menu,
+  orderStatus,
+}: OrderInfoProps) => {
+  const setOrder = useSetAtom(orderAtom);
+
   const handleConfirmOrder = async () => {
     const rawConfirmOrderResponse = await fetch(
       `${BACKEND_URL}/order/${inviteId}/confirm`,
@@ -47,15 +58,18 @@ const OrderInfo = ({ inviteId, orderList, menu }: OrderInfoProps) => {
       showConfirmButton: false,
       timer: 1500,
     });
+    setOrder((order) => ({ ...order, status: OrderStatus.CONFIRMED }));
   };
 
   return (
     <Container>
       <Grid.Container>
         <Grid>
-          <Button onClick={handleConfirmOrder} ghost bordered>
-            Confirm Order
-          </Button>
+          {orderStatus === OrderStatus.INPROGRESS && (
+            <Button onClick={handleConfirmOrder} ghost bordered>
+              Confirm Order
+            </Button>
+          )}
         </Grid>
       </Grid.Container>
       <Collapse.Group bordered>

@@ -102,7 +102,9 @@ export const confirmOrder = async (inviteId: string) => {
         include: {
           user: {
             select: {
-              pin: false,
+              id: true,
+              name: true,
+              phoneNumber: true,
             },
           },
         },

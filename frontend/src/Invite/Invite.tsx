@@ -3,7 +3,7 @@ import { useLocation, useParams } from "react-router";
 import { Dish, DishType } from "../interfaces/menu";
 import { GetInviteResult, Invitation } from "../interfaces/request";
 import { Container, FormElement, Spacer } from "@nextui-org/react";
-import { atom, useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { cartAtom, orderAtom, tokenAtom, userAtom } from "../atoms";
 import { BACKEND_URL, BASE_PATH, GRPC_URL } from "../config";
 import Swal from "sweetalert2";
@@ -17,6 +17,7 @@ import { FetchOrderRequest, FetchOrderResponse, UserOrder } from "../pb/orders";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { OrderStreamClient } from "../pb/orders.client";
 import { keyBy } from "lodash";
+import { OrderStatus } from "../enums";
 
 interface DishItem extends Dish {
   dishTypeId: number;
@@ -58,14 +59,13 @@ const Invite = () => {
   const [currentCart, setCart] = useAtom(cartAtom);
   const [filterText, setFilterText] = useState("");
   const [inviteInfo, setInviteInfo] = useState<GetInviteResult>();
-  const [user] = useAtom(
-    useMemo(() => atom((get) => get(userAtom)), [inviteInfo])
-  );
-  const [token] = useAtom(useMemo(() => atom((get) => get(tokenAtom)), []));
-  const [order, setOrder] = useAtom(orderAtom);
   const [orderList, setOrderList] = useState<FetchOrderResponse["userOrder"][]>(
     []
   );
+
+  const user = useAtomValue(userAtom);
+  const token = useAtomValue(tokenAtom);
+  const [order, setOrder] = useAtom(orderAtom);
 
   const handleGetInviteInfo = async () => {
     const pushedInviteInfo = location.state as Invitation;
@@ -97,6 +97,7 @@ const Invite = () => {
             setOrder({
               isSubmitted: true,
               orderId: inviteInfoResult.myOrder.id,
+              status: inviteInfoResult.order.status,
             });
             setCart(inviteInfoResult.myOrder.detail);
           }
@@ -107,6 +108,7 @@ const Invite = () => {
       setOrder({
         isSubmitted: true,
         orderId: "",
+        status: getInviteResult.status,
       });
     }
   };
@@ -118,7 +120,6 @@ const Invite = () => {
   const handleUpdateOrderList = (userOrder: UserOrder) => {
     setOrderList((lastOrderList) => {
       return lastOrderList.reduce((acc, cur) => {
-        console.log(cur);
         if (!cur || !userOrder) {
           return acc;
         }
@@ -265,6 +266,7 @@ const Invite = () => {
               dishes={dishes}
               prices={prices}
               handleChangeFilterText={handleChangeFilterText}
+              canEdit={order.status === OrderStatus.INPROGRESS}
             />
           </TabPanel>
           <TabPanel>
@@ -272,6 +274,7 @@ const Invite = () => {
               inviteId={inviteInfo.order.inviteId}
               menu={keyedMenu}
               orderList={orderList}
+              orderStatus={order.status}
             />
           </TabPanel>
           <TabPanel>
@@ -285,6 +288,7 @@ const Invite = () => {
           dishes={dishes}
           prices={prices}
           handleChangeFilterText={handleChangeFilterText}
+          canEdit={inviteInfo.order.status === OrderStatus.INPROGRESS}
         />
       )}
     </Container>

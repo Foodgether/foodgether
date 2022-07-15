@@ -15,6 +15,7 @@ interface CartContentProps {
   prices: {
     [key: string]: Price;
   };
+  canEdit: boolean;
 }
 
 const CartContent = ({
@@ -22,6 +23,7 @@ const CartContent = ({
   currentCart,
   prices,
   inviteId,
+  canEdit,
 }: CartContentProps) => {
   const [order, setOrder] = useAtom(orderAtom);
 
@@ -126,13 +128,16 @@ const CartContent = ({
             key={dish.id}
             {...dish}
             price={dish.discountPrice ? dish.discountPrice : dish.price}
+            canEdit={canEdit}
           />
         );
       }, [])}
       <Text>{totalPrice}</Text>
-      <Button auto flat onClick={handleSendOrder} css={{ m: "auto" }}>
-        Confirm
-      </Button>
+      {canEdit && (
+        <Button auto flat onClick={handleSendOrder} css={{ m: "auto" }}>
+          Confirm
+        </Button>
+      )}
     </div>
   );
 };
