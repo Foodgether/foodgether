@@ -9,7 +9,7 @@ import { Dish } from "../interfaces/menu";
 import { Collapse } from "@nextui-org/react";
 import { Dictionary } from "lodash";
 import { OrderStatus } from "../enums";
-import { useAtom, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { orderAtom } from "../atoms";
 
 interface OrderInfoProps {
