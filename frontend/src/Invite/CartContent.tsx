@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Text } from "@nextui-org/react";
 import { DishInOrder, orderAtom } from "../atoms";
 import CartItem from "./CartItem";
 import { Price } from "../interfaces/menu";
 import { DishRenderItem } from "./Invite";
-import { BACKEND_URL } from "../config";
+import { BACKEND_URL, fetchConfigs } from "../config";
 import Swal from "sweetalert2";
 import { useAtom } from "jotai";
+import { errorAlertOptions, successAlertOptions } from "../alertOptions";
 
 interface CartContentProps {
   inviteId: string;
@@ -31,32 +32,22 @@ const CartContent = ({
     const rawSendOrderResponse = await fetch(
       `${BACKEND_URL}/order/${inviteId}/submit`,
       {
+        ...fetchConfigs,
         method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
         body: JSON.stringify({ detail: currentCart }),
       }
     );
     if (!rawSendOrderResponse.ok) {
       const { message } = await rawSendOrderResponse.json();
       await Swal.fire({
-        position: "center",
-        icon: "error",
+        ...errorAlertOptions,
         title: message,
-        showConfirmButton: false,
-        timer: 1500,
       });
     }
     const SendOrderResponse = await rawSendOrderResponse.json();
     await Swal.fire({
-      position: "center",
-      icon: "success",
+      ...successAlertOptions,
       title: "Send order successfully",
-      showConfirmButton: false,
-      timer: 1500,
     });
     setOrder({ ...order, isSubmitted: true, orderId: SendOrderResponse.id });
   };
@@ -77,20 +68,14 @@ const CartContent = ({
     if (!rawSendOrderResponse.ok) {
       const { message } = await rawSendOrderResponse.json();
       await Swal.fire({
-        position: "center",
-        icon: "error",
+        ...errorAlertOptions,
         title: message,
-        showConfirmButton: false,
-        timer: 1500,
       });
     }
     const SendOrderResponse = await rawSendOrderResponse.json();
     await Swal.fire({
-      position: "center",
-      icon: "success",
+      ...successAlertOptions,
       title: "Send order successfully",
-      showConfirmButton: false,
-      timer: 1500,
     });
     setOrder({ ...order, isSubmitted: true, orderId: SendOrderResponse.id });
   };
@@ -103,12 +88,17 @@ const CartContent = ({
     await updateNewOrder();
   };
 
-  const totalPrice = currentCart.reduce((total, item) => {
-    return total + item.quantity * prices[item.dishId].value;
-  }, 0);
-  const uniqueDishes = [
-    ...new Map(dishes.map((item) => [item.id, item])).values(),
-  ];
+  const totalPrice = useMemo(
+    () =>
+      currentCart.reduce((total, item) => {
+        return total + item.quantity * prices[item.dishId].value;
+      }, 0),
+    [currentCart]
+  );
+  const uniqueDishes = useMemo(
+    () => [...new Map(dishes.map((item) => [item.id, item])).values()],
+    [dishes]
+  );
   return (
     <div style={{ width: "20em" }}>
       {uniqueDishes.reduce((acc: any[], dish: DishRenderItem) => {

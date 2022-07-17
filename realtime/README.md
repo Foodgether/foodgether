@@ -19,7 +19,8 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
 cd realtime && protoc -I=../proto --go_out=./ ../proto/orders.proto --go-grpc_out=./ --grpc-gateway_out=./
 ```
-4. Use command `air` or build to run (`air` on windows acting weird tho)
+4. Start Redis and Envoy (with config `envoy.yaml` in `envoy` folder) in Docker
+5. Use command `air` or build to run (`air` on windows acting weird tho)
 
 ## Environment Variable
 

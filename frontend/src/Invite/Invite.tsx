@@ -3,9 +3,9 @@ import { useLocation, useParams } from "react-router";
 import { Dish, DishType } from "../interfaces/menu";
 import { GetInviteResult, Invitation } from "../interfaces/request";
 import { Container, FormElement, Spacer } from "@nextui-org/react";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { cartAtom, orderAtom, tokenAtom, userAtom } from "../atoms";
-import { BACKEND_URL, BASE_PATH, GRPC_URL } from "../config";
+import { BACKEND_URL, BASE_PATH, fetchConfigs, GRPC_URL } from "../config";
 import Swal from "sweetalert2";
 import Loader from "../components/Loader";
 import InviteCommon from "./InviteCommon";
@@ -34,17 +34,27 @@ enum InviteTab {
 const getOrders = async (inviteId: string) => {
   return fetch(`${BACKEND_URL}/order/${inviteId}/orders`, {
     method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
+    ...fetchConfigs,
   }).then((result) => {
     if (!result.ok) {
       return [];
     }
-    return result.json();
+    return result.json().then((data) => {
+      return data;
+    });
   });
+};
+
+const getGrpcStream = (orderId: string, token: string) => {
+  const transport = new GrpcWebFetchTransport({
+    baseUrl: GRPC_URL,
+  });
+  const client = new OrderStreamClient(transport);
+  const fetchOrderRequest: FetchOrderRequest = {
+    orderId,
+    token,
+  };
+  return client.fetchOrder(fetchOrderRequest);
 };
 
 const Invite = () => {
@@ -53,7 +63,7 @@ const Invite = () => {
 
   if (!inviteId) {
     window.location.replace(BASE_PATH ? BASE_PATH : "/");
-    return <> Not Found</>;
+    return <>Not Found</>;
   }
 
   const [currentCart, setCart] = useAtom(cartAtom);
@@ -72,11 +82,7 @@ const Invite = () => {
     if (!pushedInviteInfo) {
       fetch(`${BACKEND_URL}/order/invite/${inviteId}`, {
         method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
+        ...fetchConfigs,
       })
         .then(async (rawResponse) => {
           if (!rawResponse.ok) {
@@ -139,37 +145,27 @@ const Invite = () => {
     if (
       "id" in user &&
       user.id === inviteInfo?.order.createdUserId &&
-      orderList.length === 0
+      orderList.length === 0 &&
+      inviteInfo.order.status === OrderStatus.INPROGRESS
     ) {
       getOrders(inviteId).then((result) => {
         setOrderList([...result]);
       });
-      const transport = new GrpcWebFetchTransport({
-        baseUrl: GRPC_URL,
-      });
-      const client = new OrderStreamClient(transport);
-      const fetchOrderRequest: FetchOrderRequest = {
-        orderId: inviteId,
-        token,
-      };
-      const streamingCall = client.fetchOrder(fetchOrderRequest);
-      const removeListener = streamingCall.responses.onMessage((response) => {
+
+      const grpcStream = getGrpcStream(inviteId, token);
+      const removeListener = grpcStream.responses.onMessage((response) => {
         if (response.operationType === "keepalive") {
           return;
         }
+        if (!response.userOrder) {
+          return;
+        }
         if (response.operationType == "insert") {
-          if (!response.userOrder) {
-            return;
-          }
           setOrderList((lastOrderList) => [
             ...lastOrderList,
             response.userOrder,
           ]);
         } else {
-          // must be update
-          if (!response.userOrder) {
-            return;
-          }
           handleUpdateOrderList(response.userOrder);
         }
       });

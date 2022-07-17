@@ -14,10 +14,11 @@ import {
 import { Virtuoso } from "react-virtuoso";
 import { useAtom } from "jotai";
 import { currentStateAtom } from "../atoms";
-import { BACKEND_URL, BASE_PATH } from "../config";
+import { BACKEND_URL, BASE_PATH, fetchConfigs } from "../config";
 import Swal from "sweetalert2";
 import RestaurantInfo from "../components/RestaurantInfo";
 import DishFilter from "../components/DishFilter";
+import { errorAlertOptions, successAlertOptions } from "../alertOptions";
 
 type dishItem = Dish | DishType;
 
@@ -33,6 +34,7 @@ const Menu = () => {
     menu: { dishTypes },
     restaurant,
   } = location.state as GetMenuResult;
+
   const dishes = dishTypes.reduce((acc: dishItem[], dishType) => {
     if (filterText === "") {
       return acc.concat(dishType).concat(dishType.dishes);
@@ -68,35 +70,22 @@ const Menu = () => {
       body: JSON.stringify({
         restaurantId: currentState.currentRestaurant,
       }),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
+      ...fetchConfigs,
     });
     if (!createRawResponse.ok) {
       const { message } = await createRawResponse.json();
-      await Swal.fire({
-        position: "center",
-        icon: "error",
-        title: message,
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      await Swal.fire({ ...errorAlertOptions, title: message });
       return;
     }
     const createInvitationResponse =
       (await createRawResponse.json()) as Invitation;
-    console.log(createInvitationResponse);
+
     copyToClipboard(
       `${window.location.origin}${BASE_PATH}/invite/${createInvitationResponse.inviteId}`
     );
     await Swal.fire({
-      position: "center",
-      icon: "success",
+      ...successAlertOptions,
       title: "Invitation link copied to clipboard",
-      showConfirmButton: false,
-      timer: 1500,
     });
     navigate(`${BASE_PATH}/invite/${createInvitationResponse.inviteId}`, {
       state: { ...createInvitationResponse },

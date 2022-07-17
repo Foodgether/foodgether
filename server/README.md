@@ -13,7 +13,8 @@
 1. Install `Node 17` or `Node 18`
 2. `npm install` to install dependencies, check `package.json`
 3. `npx prisma generate` to generate definitions from prisma file
-4. `npm run dev` to start local server, check `package.json`
+4. Start Redis in Docker
+5. `npm run dev` to start local server, check `package.json`
 
 ## Environment Variable
 

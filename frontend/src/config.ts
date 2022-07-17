@@ -8,3 +8,11 @@ export const BACKEND_URL = import.meta.env.VITE_FOODGETHER_BACKEND_URL
 export const GRPC_URL = import.meta.env.VITE_FOODGETHER_GRPC_URL
   ? import.meta.env.VITE_FOODGETHER_GRPC_URL
   : "http://localhost:4001";
+
+export const fetchConfigs: RequestInit = {
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+};

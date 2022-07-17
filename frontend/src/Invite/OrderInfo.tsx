@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Button, Container, Grid } from "@nextui-org/react";
 import Swal from "sweetalert2";
-import { BACKEND_URL } from "../config";
+import { BACKEND_URL, fetchConfigs } from "../config";
 import { FetchOrderResponse } from "../pb/orders";
 import { Virtuoso } from "react-virtuoso";
 import OrderDetail from "./OrderInfo/OrderDetail";
@@ -11,6 +11,7 @@ import { Dictionary } from "lodash";
 import { OrderStatus } from "../enums";
 import { useSetAtom } from "jotai";
 import { orderAtom } from "../atoms";
+import { errorAlertOptions, successAlertOptions } from "../alertOptions";
 
 interface OrderInfoProps {
   inviteId: string;
@@ -32,31 +33,18 @@ const OrderInfo = ({
       `${BACKEND_URL}/order/${inviteId}/confirm`,
       {
         method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
+        ...fetchConfigs,
       }
     );
     if (!rawConfirmOrderResponse.ok) {
       const { message } = await rawConfirmOrderResponse.json();
-      await Swal.fire({
-        position: "center",
-        icon: "error",
-        title: message,
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      await Swal.fire({ ...errorAlertOptions, title: message });
       return;
     }
-    const ConfirmOrderResponse = await rawConfirmOrderResponse.json();
+    await rawConfirmOrderResponse.json();
     await Swal.fire({
-      position: "center",
-      icon: "success",
+      ...successAlertOptions,
       title: "Confirm order successfully",
-      showConfirmButton: false,
-      timer: 1500,
     });
     setOrder((order) => ({ ...order, status: OrderStatus.CONFIRMED }));
   };
@@ -70,6 +58,11 @@ const OrderInfo = ({
               Confirm Order
             </Button>
           )}
+          {orderStatus !== OrderStatus.CANCELLED && (
+            <Button onClick={handleConfirmOrder} ghost bordered>
+              Cancle Order
+            </Button>
+          )}
         </Grid>
       </Grid.Container>
       <Collapse.Group bordered>
@@ -77,7 +70,7 @@ const OrderInfo = ({
           useWindowScroll
           overscan={500}
           data={orderList}
-          itemContent={(index, order) => {
+          itemContent={(_, order) => {
             if (!order) {
               return;
             }
