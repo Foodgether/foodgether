@@ -4,6 +4,7 @@ import {
 } from "../middlewares/interface/authenticate";
 import { Response } from "express";
 import {
+  CancelOrderSchema,
   ConfirmOrderSchema,
   CreateInviteSchema,
   CreateOrderSchema,
@@ -14,13 +15,13 @@ import { nanoid } from "nanoid/async";
 import {
   cacheOrder,
   calculateFinalOrder,
-  canOrderBeConfirmed,
-  confirmOrder,
+  changeOrderStatus,
   createOrder,
   createUserOrder,
   doesInviteIdExist,
   getCachedOrder,
   getInviteOrder,
+  isOrderInStatus,
   updateUserOrder,
 } from "../services/order";
 import { getRestaurantInfo } from "../services/restaurant";
@@ -240,11 +241,16 @@ export const confirmOrderController = async (
   try {
     const { inviteId } = await ConfirmOrderSchema.validate(req.params);
     // TODO: verify privilege
-    const canConfirm = await canOrderBeConfirmed(inviteId);
+    const canConfirm = await isOrderInStatus(inviteId, (status) => {
+      return status === OrderStatus.INPROGRESS;
+    });
     if (!canConfirm) {
       throw new Error("Order can't be confirmed");
     }
-    const confirmedOrder = await confirmOrder(inviteId);
+    const confirmedOrder = await changeOrderStatus(
+      inviteId,
+      OrderStatus.CONFIRMED
+    );
     const finalOrder = calculateFinalOrder(confirmedOrder);
 
     const inviteOrder = await getCachedOrder(inviteId);
@@ -253,6 +259,36 @@ export const confirmOrderController = async (
       await cacheOrder(inviteId, inviteOrder);
     }
     return res.status(200).json({ ...confirmedOrder, finalOrder });
+  } catch (err) {
+    logger.log("error", `Failed at getting menu: ${err}\n${err.stack}`);
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+export const cancelOrderController = async (
+  req: IAuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const { inviteId } = await CancelOrderSchema.validate(req.params);
+    // TODO: verify privilege
+    const canCancel = await isOrderInStatus(inviteId, (status) => {
+      return (
+        status === OrderStatus.INPROGRESS || status === OrderStatus.CONFIRMED
+      );
+    });
+    console.log(canCancel);
+    if (!canCancel) {
+      throw new Error("Order can't be cancelled");
+    }
+    await changeOrderStatus(inviteId, OrderStatus.CANCELLED);
+
+    const inviteOrder = await getCachedOrder(inviteId);
+    if (inviteOrder) {
+      inviteOrder.status = OrderStatus.CANCELLED;
+      await cacheOrder(inviteId, inviteOrder);
+    }
+    return res.status(200);
   } catch (err) {
     logger.log("error", `Failed at getting menu: ${err}\n${err.stack}`);
     return res.status(500).json({ message: err.message });

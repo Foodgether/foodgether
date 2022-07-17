@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Button, Container, Grid } from "@nextui-org/react";
+import { Button, Container, Grid, Spacer } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { BACKEND_URL, fetchConfigs } from "../config";
 import { FetchOrderResponse } from "../pb/orders";
@@ -32,8 +32,8 @@ const OrderInfo = ({
     const rawConfirmOrderResponse = await fetch(
       `${BACKEND_URL}/order/${inviteId}/confirm`,
       {
-        method: "POST",
         ...fetchConfigs,
+        method: "POST",
       }
     );
     if (!rawConfirmOrderResponse.ok) {
@@ -49,6 +49,27 @@ const OrderInfo = ({
     setOrder((order) => ({ ...order, status: OrderStatus.CONFIRMED }));
   };
 
+  const handleCancelOrder = async () => {
+    const rawCancelOrderResponse = await fetch(
+      `${BACKEND_URL}/order/${inviteId}/cancel`,
+      {
+        ...fetchConfigs,
+        method: "POST",
+      }
+    );
+    if (!rawCancelOrderResponse.ok) {
+      const { message } = await rawCancelOrderResponse.json();
+      await Swal.fire({ ...errorAlertOptions, title: message });
+      return;
+    }
+    await rawCancelOrderResponse.json();
+    await Swal.fire({
+      ...successAlertOptions,
+      title: "Confirm order successfully",
+    });
+    setOrder((order) => ({ ...order, status: OrderStatus.CANCELLED }));
+  };
+
   return (
     <Container>
       <Grid.Container>
@@ -59,12 +80,13 @@ const OrderInfo = ({
             </Button>
           )}
           {orderStatus !== OrderStatus.CANCELLED && (
-            <Button onClick={handleConfirmOrder} ghost bordered>
+            <Button onClick={handleCancelOrder} ghost bordered>
               Cancle Order
             </Button>
           )}
         </Grid>
       </Grid.Container>
+      <Spacer y={1} />
       <Collapse.Group bordered>
         <Virtuoso
           useWindowScroll

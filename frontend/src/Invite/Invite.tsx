@@ -72,6 +72,7 @@ const Invite = () => {
   const [orderList, setOrderList] = useState<FetchOrderResponse["userOrder"][]>(
     []
   );
+  const [removeGrpcStream, setRemoveGrpcStream] = useState<any>(null);
 
   const user = useAtomValue(userAtom);
   const token = useAtomValue(tokenAtom);
@@ -145,12 +146,14 @@ const Invite = () => {
     if (
       "id" in user &&
       user.id === inviteInfo?.order.createdUserId &&
-      orderList.length === 0 &&
-      inviteInfo.order.status === OrderStatus.INPROGRESS
+      orderList.length === 0
     ) {
       getOrders(inviteId).then((result) => {
         setOrderList([...result]);
       });
+      if (inviteInfo.order.status !== OrderStatus.INPROGRESS) {
+        return;
+      }
 
       const grpcStream = getGrpcStream(inviteId, token);
       const removeListener = grpcStream.responses.onMessage((response) => {
@@ -169,11 +172,21 @@ const Invite = () => {
           handleUpdateOrderList(response.userOrder);
         }
       });
+      setRemoveGrpcStream(removeListener);
       return () => {
-        removeListener();
+        if (removeGrpcStream) {
+          // probably not listener register yet
+          removeGrpcStream();
+        }
       };
     }
   }, [user, inviteInfo]);
+
+  useEffect(() => {
+    if (order.status !== OrderStatus.INPROGRESS && removeGrpcStream) {
+      removeGrpcStream();
+    }
+  }, [order.status]);
 
   const menu = inviteInfo?.order.menu;
   const restaurant = inviteInfo?.order.restaurant;

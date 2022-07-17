@@ -88,14 +88,17 @@ export const createUserOrder = async (
   });
 };
 
-export const confirmOrder = async (inviteId: string) => {
+export const changeOrderStatus = async (
+  inviteId: string,
+  status: OrderStatus
+) => {
   const prisma = getPrismaClient();
   return prisma.order.update({
     where: {
       inviteId,
     },
     data: {
-      status: OrderStatus.CONFIRMED,
+      status,
     },
     include: {
       orders: {
@@ -113,7 +116,10 @@ export const confirmOrder = async (inviteId: string) => {
   });
 };
 
-export const canOrderBeConfirmed = async (inviteId: string) => {
+export const isOrderInStatus = async (
+  inviteId: string,
+  validation: (status: OrderStatus) => boolean
+) => {
   const prisma = getPrismaClient();
   const orderStatus = await prisma.order.findUnique({
     where: {
@@ -123,7 +129,7 @@ export const canOrderBeConfirmed = async (inviteId: string) => {
       status: true,
     },
   });
-  return orderStatus.status === OrderStatus.INPROGRESS;
+  return validation(orderStatus.status);
 };
 
 type ConfirmedOrder = Order & {

@@ -54,3 +54,4 @@ export const ConfirmOrderSchema = yup
   .required();
 
 export const GetOrdersSchema = ConfirmOrderSchema;
+export const CancelOrderSchema = ConfirmOrderSchema;
