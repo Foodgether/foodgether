@@ -21,6 +21,30 @@ export const upsertMenu = (
           isAvailable: dish.is_available,
           isActive: dish.is_active,
           photos: dish.photos,
+          options: dish.options.map((option) => {
+            return {
+              ntop: option.ntop,
+              mandatory: option.mandatory,
+              id: option.id,
+              name: option.name,
+              optionItems: {
+                minSelect: option.option_items.min_select,
+                maxSelect: option.option_items.max_select,
+                items: option.option_items.items.map((item) => {
+                  return {
+                    id: item.id,
+                    name: item.name,
+                    weight: item.weight,
+                    ntopPrice: item.ntop_price,
+                    maxQuantity: item.max_quantity,
+                    isDefault: item.is_default,
+                    topOrder: item.top_order,
+                    price: item.price,
+                  };
+                }),
+              },
+            };
+          }),
         };
       }),
     };

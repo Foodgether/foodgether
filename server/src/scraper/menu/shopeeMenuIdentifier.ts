@@ -1,49 +1,60 @@
-import { Page } from 'puppeteer';
-import logger from '../../utils/logger';
-import { GETTING_MENU_FAILED, GETTING_MENU_TIMEDOUT, GETTING_RESTAURANT_INFO_FAILED } from '../../constants/error';
+import { Page } from "puppeteer";
+import logger from "../../utils/logger";
+import {
+  GETTING_MENU_FAILED,
+  GETTING_MENU_TIMEDOUT,
+  GETTING_RESTAURANT_INFO_FAILED,
+} from "../../constants/error";
 
-export default async (page: Page) => new Promise<ShopeeScrapeResult>((resolve, reject) => {
-  logger.log('info', 'Identifying Shopee Menu');
-  let menu = null;
-  let restaurant = null;
-  let isMenuReady = false;
-  let isRestaurantReady = false;
-  let totalTime = 0;
+export default async (page: Page) =>
+  new Promise<ShopeeScrapeResult>((resolve, reject) => {
+    logger.log("info", "Identifying Shopee Menu");
+    let menu = null;
+    let restaurant = null;
+    let isMenuReady = false;
+    let isRestaurantReady = false;
+    let totalTime = 0;
 
-  page.reload();
-  page.on('response', async (response) => {
-    if (response.url().indexOf('get_delivery_dishes') > 0 && response.request().method() !== 'OPTIONS') {
-      menu = await response.json();
-      if (menu && menu.reply && menu.result !== 'success') {
-        clearInterval(menuInterval);
-        reject(GETTING_MENU_FAILED);
+    page.reload();
+    page.on("response", async (response) => {
+      if (
+        response.url().indexOf("get_delivery_dishes") > 0 &&
+        response.request().method() !== "OPTIONS"
+      ) {
+        menu = await response.json();
+        if (menu && menu.reply && menu.result !== "success") {
+          clearInterval(menuInterval);
+          reject(GETTING_MENU_FAILED);
+        }
+        menu = menu.reply.menu_infos as Menu[];
+        isMenuReady = true;
       }
-      menu = menu.reply.menu_infos as Menu[]
-      isMenuReady = true;
-    }
-    if (response.url().indexOf('get_detail') > 0 && response.request().method() !== 'OPTIONS') {
-      restaurant = await response.json();
-      if (restaurant && restaurant.reply && restaurant.result !== 'success') {
-        clearInterval(menuInterval);
-        reject(GETTING_RESTAURANT_INFO_FAILED);
+      if (
+        response.url().indexOf("get_detail") > 0 &&
+        response.request().method() !== "OPTIONS"
+      ) {
+        restaurant = await response.json();
+        if (restaurant && restaurant.reply && restaurant.result !== "success") {
+          clearInterval(menuInterval);
+          reject(GETTING_RESTAURANT_INFO_FAILED);
+        }
+        restaurant = restaurant.reply.delivery_detail;
+        isRestaurantReady = true;
       }
-      restaurant = restaurant.reply.delivery_detail
-      isRestaurantReady = true;
-    }
+    });
+    const menuInterval = setInterval(() => {
+      if (isMenuReady && isRestaurantReady) {
+        logger.log("info", "Shopee Menu Identified");
+        clearInterval(menuInterval);
+        resolve({ restaurant, menu });
+      }
+      if (totalTime === 15 * 1000) {
+        clearInterval(menuInterval);
+        reject(GETTING_MENU_TIMEDOUT);
+      }
+      totalTime += 100;
+    }, 100);
   });
-  const menuInterval = setInterval(() => {
-    if (isMenuReady && isRestaurantReady) {
-      logger.log('info', 'Shopee Menu Identified');
-      clearInterval(menuInterval);
-      resolve({restaurant, menu});
-    }
-    if (totalTime === 15 * 1000) {
-      clearInterval(menuInterval);
-      reject(GETTING_MENU_TIMEDOUT);
-    }
-    totalTime += 100;
-  }, 100);
-});
 
 export interface Price {
   text: string;
@@ -245,8 +256,7 @@ export interface Photo {
   height: number;
 }
 
-export interface ConfirmMethods {
-}
+export interface ConfirmMethods {}
 
 export interface MinOrderValue2 {
   text: string;

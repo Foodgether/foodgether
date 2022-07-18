@@ -67,6 +67,7 @@ model UserOrder {
   order     Order         @relation(fields: [orderId], references: [id])
   orderId   String        @db.ObjectId
   detail    OrderDetail[]
+  note      String?
   isDeleted Boolean       @default(false)
   createdAt DateTime?     @default(now())
   updatedAt DateTime?     @default(now())
@@ -126,6 +127,7 @@ type Dish {
   isAvailable   Boolean
   isActive      Boolean
   photos        Photo[]
+  options       Option[]
 }
 
 type Price {
@@ -146,4 +148,29 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
   EXPIRED
+}
+
+type Option {
+  ntop        String
+  mandatory   Boolean
+  id          Int
+  optionItems OptionItems
+  name        String
+}
+
+type OptionItems {
+  minSelect Int
+  maxSelect Int
+  items     OptionItem[]
+}
+
+type OptionItem {
+  name        String
+  weight      Int
+  ntopPrice   Price
+  maxQuantity Int
+  isDefault   Boolean
+  topOrder    Int
+  price       Price
+  id          Int
 }
