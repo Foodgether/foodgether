@@ -30,7 +30,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      - DATABASE_URL=mongodb+srv://$FOODGETHER_MONGO_USERNAME:$FOODGETHER_MONGO_PASSWORD@foodgether.e8cgw.mongodb.net/foodgether-prod?retryWrites=true&w=majority
+      - DATABASE_URL=mongodb+srv://$FOODGETHER_MONGO_USERNAME:$FOODGETHER_MONGO_PASSWORD@lamprojects.e8cgw.mongodb.net/foodgether-prod?retryWrites=true&w=majority
       - FOODGETHER_REDIS_PORT=$FOODGETHER_REDIS_PORT
       - FOODGETHER_REDIS_HOST=$FOODGETHER_REDIS_HOST
       - FOODGETHER_REDIS_PASSWORD=$FOODGETHER_REDIS_PASSWORD
@@ -66,7 +66,7 @@ services:
       context: ./realtime
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=mongodb+srv://$FOODGETHER_MONGO_USERNAME:$FOODGETHER_MONGO_PASSWORD@foodgether.e8cgw.mongodb.net/foodgether-prod?retryWrites=true&w=majority
+      - DATABASE_URL=mongodb+srv://$FOODGETHER_MONGO_USERNAME:$FOODGETHER_MONGO_PASSWORD@lamprojects.e8cgw.mongodb.net/foodgether-prod?retryWrites=true&w=majority
       - DATABASE_NAME=foodgether-prod
       - FOODGETHER_REDIS_PORT=$FOODGETHER_REDIS_PORT
       - FOODGETHER_REDIS_HOST=$FOODGETHER_REDIS_HOST
