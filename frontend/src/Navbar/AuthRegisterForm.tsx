@@ -1,62 +1,62 @@
-import React from "react";
-import { useFormik } from "formik";
-import Swal from "sweetalert2";
-import { BACKEND_URL } from "../config";
-import { useAtom } from "jotai";
-import { tokenAtom, userAtom } from "../atoms";
-import { Button, Input, Spacer } from "@nextui-org/react";
+import React from 'react'
+import { useFormik } from 'formik'
+import Swal from 'sweetalert2'
+import { BACKEND_URL } from '../config'
+import { useSetAtom } from 'jotai'
+import { tokenAtom, userAtom } from '../atoms'
+import { Button, Input, Spacer } from '@nextui-org/react'
 
 export type AuthFormRegisterValues = {
-  phoneNumber: string;
-  name: string;
-  pin: string;
-};
+  phoneNumber: string
+  name: string
+  pin: string
+}
 
 const InputCss = {
-  whiteSpace: "nowrap",
-  $$inputPlaceholderColor: "black",
-  $$inputTextColor: "$colors-primary",
-};
+  whiteSpace: 'nowrap',
+  $$inputPlaceholderColor: 'black',
+  $$inputTextColor: '$colors-primary',
+}
 
 const AuthRegisterForm = () => {
-  const [_, setUser] = useAtom(userAtom);
-  const [__, setToken] = useAtom(tokenAtom);
+  const setUser = useSetAtom(userAtom)
+  const setToken = useSetAtom(tokenAtom)
 
   const handleClickSubmit = async () => {
-    await formik.submitForm();
-  };
+    await formik.submitForm()
+  }
 
   const formik = useFormik<AuthFormRegisterValues>({
-    initialValues: { phoneNumber: "", name: "", pin: "" },
+    initialValues: { phoneNumber: '', name: '', pin: '' },
     onSubmit: async () => {
       const rawRegisterResponse = await fetch(`${BACKEND_URL}/user`, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify({
           ...formik.values,
         }),
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
-      });
+        credentials: 'include',
+      })
       if (!rawRegisterResponse.ok) {
-        const { message } = await rawRegisterResponse.json();
+        const { message } = await rawRegisterResponse.json()
         await Swal.fire({
-          position: "center",
-          icon: "error",
+          position: 'center',
+          icon: 'error',
           title: message,
           showConfirmButton: false,
           timer: 1500,
-        });
-        return;
+        })
+        return
       }
-      const registerResponse = await rawRegisterResponse.json();
-      setUser({ ...registerResponse.user, fetching: false, loggedIn: true });
-      setToken(registerResponse.token);
-      Swal.close();
+      const registerResponse = await rawRegisterResponse.json()
+      setUser({ ...registerResponse.user, fetching: false, loggedIn: true })
+      setToken(registerResponse.token)
+      Swal.close()
     },
-  });
+  })
 
   return (
     <form>
@@ -64,13 +64,13 @@ const AuthRegisterForm = () => {
         rounded
         bordered
         fullWidth
-        labelLeft="Phone Number"
-        aria-label="Phone Number"
-        placeholder="0123456789"
-        color="primary"
-        type="text"
-        name="phoneNumber"
-        id="phoneNumber"
+        labelLeft='Phone Number'
+        aria-label='Phone Number'
+        placeholder='0123456789'
+        color='primary'
+        type='text'
+        name='phoneNumber'
+        id='phoneNumber'
         onChange={formik.handleChange}
         value={formik.values.phoneNumber}
         css={InputCss}
@@ -81,13 +81,13 @@ const AuthRegisterForm = () => {
         rounded
         bordered
         fullWidth
-        labelLeft="Name"
-        aria-label="Name"
-        placeholder="John Doe"
-        color="primary"
-        type="text"
-        name="name"
-        id="name"
+        labelLeft='Name'
+        aria-label='Name'
+        placeholder='John Doe'
+        color='primary'
+        type='text'
+        name='name'
+        id='name'
         onChange={formik.handleChange}
         value={formik.values.name}
         css={InputCss}
@@ -98,28 +98,23 @@ const AuthRegisterForm = () => {
         rounded
         bordered
         fullWidth
-        labelLeft="PIN"
-        aria-label="PIN"
-        placeholder="1234"
-        color="primary"
-        type="password"
-        name="pin"
-        id="pin"
+        labelLeft='PIN'
+        aria-label='PIN'
+        placeholder='1234'
+        color='primary'
+        type='password'
+        name='pin'
+        id='pin'
         onChange={formik.handleChange}
         value={formik.values.pin}
         css={InputCss}
       />
       <Spacer y={1} />
-      <Button
-        onClick={handleClickSubmit}
-        ghost
-        color="gradient"
-        css={{ margin: "auto" }}
-      >
+      <Button onClick={handleClickSubmit} ghost color='gradient' css={{ margin: 'auto' }}>
         Register
       </Button>
     </form>
-  );
-};
+  )
+}
 
-export default AuthRegisterForm;
+export default AuthRegisterForm

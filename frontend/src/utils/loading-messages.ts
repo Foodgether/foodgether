@@ -244,7 +244,7 @@ export const loadingMessages = [
   'Please wait while we serve other customers...',
   'Our premium plan is faster',
   'Feeding unicorns...',
-];
+]
 
 export const getRandomMessage = (): string =>
-  loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+  loadingMessages[Math.floor(Math.random() * loadingMessages.length)]

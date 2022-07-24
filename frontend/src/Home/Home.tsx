@@ -1,38 +1,31 @@
-import React, { useState } from 'react';
-import './Home.css';
-import { useNavigate } from 'react-router';
-import Loader from '../components/Loader';
-import { getRandomMessage } from '../utils/loading-messages';
-import Swal from 'sweetalert2';
-import { BACKEND_URL, BASE_PATH } from '../config';
-import {
-  Button,
-  FormElement,
-  Input,
-  Loading,
-  Spacer,
-  Text,
-} from '@nextui-org/react';
-import { GetMenuResult } from '../interfaces/request';
-import { useAtom } from 'jotai';
-import { currentStateAtom } from '../atoms';
+import React, { useState } from 'react'
+import './Home.css'
+import { useNavigate } from 'react-router'
+import Loader from '../components/Loader'
+import { getRandomMessage } from '../utils/loading-messages'
+import Swal from 'sweetalert2'
+import { BACKEND_URL, BASE_PATH } from '../config'
+import { Button, FormElement, Input, Loading, Spacer, Text } from '@nextui-org/react'
+import { GetMenuResult } from '../interfaces/request'
+import { useAtom } from 'jotai'
+import { currentStateAtom } from '../atoms'
 
 function Home() {
-  const [url, setUrl] = useState('');
-  const [isShowingSpinner, setSpinner] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState('');
-  const [currentState, setCurrentState] = useAtom(currentStateAtom);
+  const [url, setUrl] = useState('')
+  const [isShowingSpinner, setSpinner] = useState(false)
+  const [loadingMessage, setLoadingMessage] = useState('')
+  const [currentState, setCurrentState] = useAtom(currentStateAtom)
 
   const setTargetUrl = (e: React.ChangeEvent<FormElement>) => {
-    setUrl(e.target.value);
-  };
+    setUrl(e.target.value)
+  }
 
   const handleGetMenu = async () => {
-    setSpinner(true);
-    setLoadingMessage(getRandomMessage());
+    setSpinner(true)
+    setLoadingMessage(getRandomMessage())
     const interval = setInterval(() => {
-      setLoadingMessage(getRandomMessage());
-    }, 2000);
+      setLoadingMessage(getRandomMessage())
+    }, 2000)
     const rawMenuResponse = await fetch(`${BACKEND_URL}/menu`, {
       method: 'POST',
       body: JSON.stringify({
@@ -44,35 +37,35 @@ function Home() {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-    });
-    clearInterval(interval);
-    setSpinner(false);
+    })
+    clearInterval(interval)
+    setSpinner(false)
     if (!rawMenuResponse.ok) {
-      const { message } = await rawMenuResponse.json();
+      const { message } = await rawMenuResponse.json()
       await Swal.fire({
         position: 'center',
         icon: 'error',
         title: message,
         showConfirmButton: false,
         timer: 1500,
-      });
-      return;
+      })
+      return
     }
-    const menuResponse = (await rawMenuResponse.json()) as GetMenuResult;
+    const menuResponse = (await rawMenuResponse.json()) as GetMenuResult
     setCurrentState({
       ...currentState,
       currentMenu: menuResponse.menu.id,
       currentRestaurant: menuResponse.restaurant.restaurantId,
-    });
-    navigate(`${BASE_PATH}/menu`, { state: { ...menuResponse } });
-  };
+    })
+    navigate(`${BASE_PATH}/menu`, { state: { ...menuResponse } })
+  }
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
-    <div className="App max-w-4xl m-auto">
+    <div className='App max-w-4xl m-auto'>
       <Spacer y={5} />
-      <Text h1 size="3.5em" color="primary">
+      <Text h1 size='3.5em' color='primary'>
         Enter your Shopee Food
       </Text>
       <Spacer y={3} />
@@ -80,39 +73,32 @@ function Home() {
         clearable
         rounded
         bordered
-        placeholder="https://shopeefood.vn/ho-chi-minh/quan-an-com-tam-31-dong-den"
-        aria-label="Input your shopeefood URL"
-        id="url"
-        type="url"
+        placeholder='https://shopeefood.vn/ho-chi-minh/quan-an-com-tam-31-dong-den'
+        aria-label='Input your shopeefood URL'
+        id='url'
+        type='url'
         required
         fullWidth
-        label=""
+        label=''
         disabled={isShowingSpinner}
         onChange={setTargetUrl}
-        color="primary"
+        color='primary'
       />
       <Spacer y={1} />
       <Button
         onPress={handleGetMenu}
-        color="gradient"
+        color='gradient'
         auto
         ghost
         css={{ width: '10em', margin: 'auto' }}
         disabled={isShowingSpinner}
       >
-        {isShowingSpinner ? (
-          <Loading color="currentColor" size="sm" />
-        ) : (
-          <Text h5>Get Menu</Text>
-        )}
+        {isShowingSpinner ? <Loading color='currentColor' size='sm' /> : <Text h5>Get Menu</Text>}
       </Button>
       <Spacer y={1} />
-      <Loader
-        isShowingLoader={isShowingSpinner}
-        loadingMessage={loadingMessage}
-      />
+      <Loader isShowingLoader={isShowingSpinner} loadingMessage={loadingMessage} />
     </div>
-  );
+  )
 }
 
-export default Home;
+export default Home

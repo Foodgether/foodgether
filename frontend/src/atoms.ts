@@ -1,55 +1,61 @@
-import { atom } from "jotai";
-import { OrderStatus } from "./enums";
+import { atom } from 'jotai'
+import { OrderStatus } from './enums'
 
 export const userAtom = atom<UserAtom | UserAtomAuthenticated>({
   fetching: true,
   loggedIn: false,
-});
-export const tokenAtom = atom<TokenAtom>("");
-export const cartAtom = atom<DishInOrder[]>([]);
+})
+export const tokenAtom = atom<TokenAtom>('')
+export const cartAtom = atom<CartAtom>({
+  detail: [],
+  note: null,
+})
 export const currentStateAtom = atom<CurrentStateAtom>({
-  currentMenu: "",
+  currentMenu: '',
   currentRestaurant: 0,
-});
+})
 
 export const initialOrderAtomValue = {
   isSubmitted: false,
-  orderId: "",
+  orderId: '',
   status: OrderStatus.INPROGRESS,
-};
-export const orderAtom = atom<OrderAtom>(initialOrderAtomValue);
+}
+export const orderAtom = atom<OrderAtom>(initialOrderAtomValue)
 
-type TokenAtom = string;
+type TokenAtom = string
 
 interface UserAtom {
-  fetching: boolean;
-  loggedIn: boolean;
+  fetching: boolean
+  loggedIn: boolean
 }
 
 interface UserAtomAuthenticated extends UserAtom {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  pin: string;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  name: string
+  phoneNumber: string
+  pin: string
+  createdAt: Date
+  updatedAt: Date
 }
 
-export type CartAtom = DishInOrder[];
+export type CartAtom = {
+  detail: DishInOrder[]
+  note: string | null
+}
 
 export interface DishInOrder {
-  dishId: number;
-  dishTypeId: number;
-  quantity: number;
+  dishId: number
+  dishTypeId: number
+  quantity: number
 }
 
 interface CurrentStateAtom {
-  currentRestaurant: number;
-  currentMenu: string;
+  currentRestaurant: number
+  currentMenu: string
 }
 
 export interface OrderAtom {
-  isSubmitted: boolean;
-  orderId: string;
-  status: OrderStatus;
+  isSubmitted: boolean
+  orderId: string
+  status: OrderStatus
 }

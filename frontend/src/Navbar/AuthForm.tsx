@@ -1,9 +1,9 @@
-import { Container } from '@nextui-org/react';
-import React from 'react';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
-import AuthLoginForm from './AuthLoginForm';
-import AuthRegisterForm from './AuthRegisterForm';
+import { Container } from '@nextui-org/react'
+import React from 'react'
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
+import 'react-tabs/style/react-tabs.css'
+import AuthLoginForm from './AuthLoginForm'
+import AuthRegisterForm from './AuthRegisterForm'
 
 enum tab {
   REGISTER = 0,
@@ -15,12 +15,8 @@ const AuthForm = () => {
     <Container>
       <Tabs defaultIndex={tab.REGISTER}>
         <TabList>
-          <Tab className="react-tabs__tab text-xl font-bold text-pink-900">
-            Register
-          </Tab>
-          <Tab className="react-tabs__tab text-xl font-bold text-pink-900">
-            Login
-          </Tab>
+          <Tab className='react-tabs__tab text-xl font-bold text-pink-900'>Register</Tab>
+          <Tab className='react-tabs__tab text-xl font-bold text-pink-900'>Login</Tab>
         </TabList>
 
         <TabPanel>
@@ -31,7 +27,7 @@ const AuthForm = () => {
         </TabPanel>
       </Tabs>
     </Container>
-  );
-};
+  )
+}
 
-export default AuthForm;
+export default AuthForm
