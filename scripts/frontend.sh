@@ -1,7 +1,7 @@
 echo "Building Front End"
 
 cd frontend
-npm install --legacy-peer-deps
+yarn install --legacy-peer-deps
 
 OUT_DIR="./src/pb"
 rm -r $OUT_DIR
@@ -14,5 +14,5 @@ npx protoc \
   ../proto/orders.proto 
 
 
-export VITE_BASE_PATH=/foodgether && npm run build
+export VITE_BASE_PATH=/foodgether && yarn build
 

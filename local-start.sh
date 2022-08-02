@@ -2,8 +2,8 @@ export FOODGETHER_REDIS_PASSWORD=12345
 export FOODGETHER_REDIS_HOST=redis
 export FOODGETHER_MONGO_USERNAME=root
 export FOODGETHER_MONGO_PASSWORD=12345
-cd frontend && npm i && npm run build
-cd .. && cd server && npm i && npm run build
+cd frontend && yarn install && yarn build
+cd .. && cd server && yarn install && yarn build
 
 if [[ $(uname -m) == 'arm64' ]] || [[ $(uname -s) == "Darwin" ]]; then
   echo "Running in arm64 mode"
