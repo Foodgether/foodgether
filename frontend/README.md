@@ -11,8 +11,8 @@
 ## Getting started
 
 1. Install `Node 17` or `Node 18`
-2. `npm install` to install dependencies, check `package.json`
-3. `npm run dev` to start local server, check `package.json`
+2. `yarn install` to install dependencies, check `package.json`
+3. `yarn dev` to start local server, check `package.json`
 
 ## Environment Variable
 
