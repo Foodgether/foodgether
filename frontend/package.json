@@ -9,7 +9,8 @@
     "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
     "lint:fix": "eslint --fix src/**/*.{js,jsx,ts,tsx,json}",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,css,md,json} --config ./.prettierrc",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "compile": "npx protoc --ts_out src/pb/ --ts_opt long_type_string --proto_path ../proto ../proto/orders.proto "
   },
   "dependencies": {
     "@nextui-org/react": "^1.0.0-beta.9",
