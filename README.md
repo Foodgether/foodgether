@@ -1,5 +1,5 @@
 # Foodgether
-# V2 is currently rewritten at: [https://github.com/lamnguyencse17/foodgether-v2](https://github.com/lamnguyencse17/foodgether-v2)
+# V2 is currently rewritten at: [https://github.com/lamnguyencse17/foodgether](https://github.com/lamnguyencse17/foodgether)
 
 [Deployment URL](https://lamprojects.me/foodgether)
 
